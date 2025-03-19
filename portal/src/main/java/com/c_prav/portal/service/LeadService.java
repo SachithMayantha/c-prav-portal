@@ -7,9 +7,17 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 public interface LeadService {
 
-    void saveLead(LeadDto leadDto);
+    String saveLead(LeadDto leadDto);
 
-    LeadDto getLeadDtoById(Integer id);
+    LeadDto getLeadById(Integer id);
+
+    List<LeadDto> getAllLeads();
+
+    String deleteLead(Integer id);
+
+    LeadDto updateLead(LeadDto leadDto);
 }
