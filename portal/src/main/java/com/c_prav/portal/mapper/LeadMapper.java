@@ -3,6 +3,7 @@ package com.c_prav.portal.mapper;
 import com.c_prav.portal.dto.LeadDto;
 import com.c_prav.portal.entity.LeadEntity;
 
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,6 +16,12 @@ public class LeadMapper {
 
         return new LeadDto(
                 leadEntity.getNLeadId(),
+                leadEntity.getNClientId(),
+                leadEntity.getCClientName(),
+                leadEntity.getCCompanyName(),
+                leadEntity.getCCompanyAddress(),
+                leadEntity.getCCompanyDetail(),
+                String.valueOf(leadEntity.getNCompanyABN()),
                 leadEntity.getCLeadDescription(),
                 String.valueOf(leadEntity.getDStartDate())
         );
@@ -27,6 +34,12 @@ public class LeadMapper {
         try {
             leadEntity = new LeadEntity(
                     leadDto.getLeadId(),
+                    leadDto.getClientId(),
+                    leadDto.getClientName(),
+                    leadDto.getCompanyName(),
+                    leadDto.getCompanyAddress(),
+                    leadDto.getCompanyDetail(),
+                    BigInteger.valueOf(Long.parseLong(leadDto.getCompanyABN())),
                     leadDto.getLeadDescription(),
                     dateFormat.parse(leadDto.getStartDate())
             );

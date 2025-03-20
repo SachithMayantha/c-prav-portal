@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -35,8 +36,10 @@ class LeadServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        leadEntity = new LeadEntity(1, "Test Lead", new Date());
-        leadDto = new LeadDto(1, "Test Lead", "2024-09-09");
+        leadEntity = new LeadEntity(1, 1, "Client Name","Company Name","Company Address","Company Details"
+                ,BigInteger.valueOf(436667745),"Test Lead", new Date());
+        leadDto = new LeadDto(1,1, "Test Name","Company Name","Company Address","Company Details"
+                ,"546475745876","Test Lead", "2024-09-09");
     }
 
     @Test
