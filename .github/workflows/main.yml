@@ -1,0 +1,45 @@
+name: CI for React JS and Spring Boot
+
+on:
+  push:
+    branches:
+      - dev  # Trigger the workflow only when code is pushed to 'dev' branch
+
+jobs:
+  backend:
+    name: Build & Test Spring Boot
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build & Test Backend
+        run: |
+          cd portal
+          mvn clean install
+
+  frontend:
+    name: Build React App
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js v22.6.0
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22.6.0
+
+      - name: Install & Build Frontend
+        run: |
+          cd portal-frontend
+          npm install
+          npm run build
