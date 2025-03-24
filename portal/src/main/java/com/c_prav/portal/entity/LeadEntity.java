@@ -17,8 +17,11 @@ public class LeadEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+
     private int nLeadId;
     private int nClientId;
+    
     private String cClientName;
     private String cCompanyName;
     private String cCompanyAddress;
