@@ -17,7 +17,7 @@ export class Menu extends Component {
                                 <div className="dot-indicator bg-success"></div>
                             </div>
                             <div className="text-wrapper">
-                                <p className="profile-name">Henry Klein</p>
+                                <p className="profile-name">Sahan Rasanjana</p>
                                 <p className="designation">Administrator</p>
                             </div>
                             <div className="icon-container">
@@ -35,21 +35,16 @@ export class Menu extends Component {
                             <i className="icon-screen-desktop menu-icon"></i>
                         </a>
                     </li>
-                    <li className="nav-item nav-category"><span className="nav-link">UI Elements</span></li>
+                    <li className="nav-item nav-category"><span className="nav-link">Registration</span></li>
+                    
                     <li className="nav-item">
-                        <a className="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-                            <span className="menu-title">Basic UI Elements</span>
+                        <a className="nav-link" data-bs-toggle="collapse" href="#forms" aria-expanded="false" aria-controls="forms">
+                            <span className="menu-title2">Dashboard</span>
                             <i className="icon-layers menu-icon"></i>
                         </a>
-                        <div className="collapse" id="ui-basic">
-                            <ul className="nav flex-column sub-menu">
-                                <li className="nav-item"> <a className="nav-link" href="pages/ui-features/buttons.html">Buttons</a></li>
-                                <li className="nav-item"> <a className="nav-link" href="pages/ui-features/dropdowns.html">Dropdowns</a></li>
-                                <li className="nav-item"> <a className="nav-link" href="pages/ui-features/typography.html">Typography</a></li>
-                            </ul>
-                        </div>
                     </li>
-                    <li className="nav-item">
+
+                    {/* <li className="nav-item">
                         <a className="nav-link" data-bs-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
                             <span className="menu-title">Icons</span>
                             <i className="icon-globe menu-icon"></i>
@@ -115,7 +110,7 @@ export class Menu extends Component {
                             <span className="menu-title">Documentation</span>
                             <i className="icon-folder-alt menu-icon"></i>
                         </a>
-                    </li>
+                    </li> */}
                 </ul>
             </nav>
 
