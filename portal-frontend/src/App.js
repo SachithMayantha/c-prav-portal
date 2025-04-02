@@ -1,14 +1,15 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
+import Menu from './components/Menu';
+import Dashboard from './pages/Dashboard';
+import CertDB from './pages/CertDB';
 
-import { Menu } from './components/Menu';
-import { Header } from './components/Header';
-import { Regi_Leads } from './components/Regi_Leads';
+import './App.css';
 
 function App() {
   return (
-    <div>
-
+    <>
       <Header />
 
       <div className="container-fluid page-body-wrapper">
@@ -19,7 +20,13 @@ function App() {
         <div className="main-panel">
           <div className="content-wrapper">
 
-            <Regi_Leads/>
+
+          <div className="content">
+                <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/cert-db" element={<CertDB />} />
+                </Routes>
+            </div>
 
           </div>
 
@@ -36,8 +43,7 @@ function App() {
 
       </div>
 
-
-    </div>
+    </>
 
   );
 }
