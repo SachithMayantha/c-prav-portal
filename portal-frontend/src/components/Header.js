@@ -23,7 +23,6 @@ export class Header extends Component {
                             <input type="search" className="form-control" placeholder="Search Here" title="Search here" />
                         </form>
                         
-                        <li className="nav-item"><a href="#" className="nav-link"><i className="icon-chart"></i></a></li>
                         <li className="nav-item dropdown">
                             <a className="nav-link count-indicator message-dropdown" id="messageDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i className="icon-speech"></i>
@@ -67,7 +66,7 @@ export class Header extends Component {
                         
                         <li className="nav-item dropdown d-none d-xl-inline-flex user-dropdown">
                             <a className="nav-link dropdown-toggle" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img className="img-xs rounded-circle ms-2" src="images/faces/face8.jpg" alt="Profile image" /> <span className="font-weight-normal"> Henry Klein </span></a>
+                                <img className="img-xs rounded-circle ms-2" src="images/faces/face8.jpg" alt="Profile image" /> <span className="font-weight-normal"> Sahan Rasanjana </span></a>
                             <div className="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
                                 <div className="dropdown-header text-center">
                                     <img className="img-md rounded-circle" src="images/faces/face8.jpg" alt="Profile image" />
@@ -91,3 +90,5 @@ export class Header extends Component {
     }
 
 }
+
+export default Header;

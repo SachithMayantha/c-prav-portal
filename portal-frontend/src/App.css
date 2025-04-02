@@ -36,3 +36,18 @@
     transform: rotate(360deg);
   }
 }
+
+.form-control {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+button{
+  margin: 2px;
+}
+
+.sidebar {
+  /* position: fixed; */
+}
+
+
