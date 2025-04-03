@@ -32,8 +32,7 @@ public class LeadServiceImpl implements LeadService {
     public LeadDto getLeadById(Integer id) {
 
         LeadEntity leadEntity = leadRepository.findById(id).get();
-        LeadDto leadDto = LeadMapper.maptoLeadDto(leadEntity);
-        return leadDto;
+        return LeadMapper.maptoLeadDto(leadEntity);
     }
 
     @Override
@@ -55,7 +54,7 @@ public class LeadServiceImpl implements LeadService {
     @Override
     public LeadDto updateLead(LeadDto leadDto) {
 
-        leadRepository.save(LeadMapper.maptoLeadEntity(leadDto));
-        return leadDto;
+        LeadEntity mappedLeadEntity =leadRepository.save(LeadMapper.maptoLeadEntity(leadDto));
+        return LeadMapper.maptoLeadDto(mappedLeadEntity);
     }
 }
