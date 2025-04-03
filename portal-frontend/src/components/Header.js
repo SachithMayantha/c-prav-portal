@@ -6,6 +6,7 @@ const Header = () => {
 
     const handleSignOut = async () => {
         await oktaAuth.signOut();
+        // await oktaAuth.signInWithRedirect();
     };
 
     // if (authState && !authState.isAuthenticated) {
