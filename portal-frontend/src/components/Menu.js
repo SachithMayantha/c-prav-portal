@@ -10,11 +10,8 @@ export class Menu extends Component {
       <nav className="sidebar sidebar-offcanvas" id="sidebar">
         <ul className="nav">
           <li className="nav-item navbar-brand-mini-wrapper">
-            <a
-              className="nav-link navbar-brand brand-logo-mini"
-              href="index.html"
-            >
-              <img src="/images/logo-mini.svg" alt="logo" />
+            <a className="nav-link navbar-brand brand-logo-mini" href="index.html">
+              {/* <img src="/images/cprav_logo.webp" alt="logo" style={{height: '65px' ,width: '80px'}}/> */}
             </a>
           </li>
           <Profile />
