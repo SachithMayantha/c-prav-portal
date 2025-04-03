@@ -6,11 +6,11 @@ export class Header extends Component {
         return (
             <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
                 <div className="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-                    <a className="navbar-brand brand-logo" href="index.html">
-                        <img src="images/logo.svg" alt="logo" className="logo-dark" />
-                        <img src="images/logo-light.svg" alt="logo-light" className="logo-light" />
+                    <a className="navbar-brand brand-logo" href="/index.html">
+                        <img src="/images/logo.svg" alt="logo" className="logo-dark" />
+                        <img src="/images/logo-light.svg" alt="logo-light" className="logo-light" />
                     </a>
-                    <a className="navbar-brand brand-logo-mini" href="index.html"><img src="images/logo-mini.svg" alt="logo" /></a>
+                    <a className="navbar-brand brand-logo-mini" href="/index.html"><img src="/images/logo-mini.svg" alt="logo" /></a>
                     <button className="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
                         <span className="icon-menu"></span>
                     </button>
@@ -36,7 +36,7 @@ export class Header extends Component {
                                 <div className="dropdown-divider"></div>
                                 <a className="dropdown-item preview-item">
                                     <div className="preview-thumbnail">
-                                        <img src="images/faces/face10.jpg" alt="image" className="img-sm profile-pic" />
+                                        <img src="/images/faces/face10.jpg" alt="image" className="img-sm profile-pic" />
                                     </div>
                                     <div className="preview-item-content flex-grow py-2">
                                         <p className="preview-subject ellipsis font-weight-medium text-dark">Marian Garner </p>
@@ -45,7 +45,7 @@ export class Header extends Component {
                                 </a>
                                 <a className="dropdown-item preview-item">
                                     <div className="preview-thumbnail">
-                                        <img src="images/faces/face12.jpg" alt="image" className="img-sm profile-pic" />
+                                        <img src="/images/faces/face12.jpg" alt="image" className="img-sm profile-pic" />
                                     </div>
                                     <div className="preview-item-content flex-grow py-2">
                                         <p className="preview-subject ellipsis font-weight-medium text-dark">David Grey </p>
@@ -54,7 +54,7 @@ export class Header extends Component {
                                 </a>
                                 <a className="dropdown-item preview-item">
                                     <div className="preview-thumbnail">
-                                        <img src="images/faces/face1.jpg" alt="image" className="img-sm profile-pic" />
+                                        <img src="/images/faces/face1.jpg" alt="image" className="img-sm profile-pic" />
                                     </div>
                                     <div className="preview-item-content flex-grow py-2">
                                         <p className="preview-subject ellipsis font-weight-medium text-dark">Travis Jenkins </p>
@@ -66,10 +66,10 @@ export class Header extends Component {
                         
                         <li className="nav-item dropdown d-none d-xl-inline-flex user-dropdown">
                             <a className="nav-link dropdown-toggle" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img className="img-xs rounded-circle ms-2" src="images/faces/face8.jpg" alt="Profile image" /> <span className="font-weight-normal"> Sahan Rasanjana </span></a>
+                                <img className="img-xs rounded-circle ms-2" src="/images/faces/face8.jpg" alt="Profile image" /> <span className="font-weight-normal"> Henry Klein </span></a>
                             <div className="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
                                 <div className="dropdown-header text-center">
-                                    <img className="img-md rounded-circle" src="images/faces/face8.jpg" alt="Profile image" />
+                                    <img className="img-md rounded-circle" src="/images/faces/face8.jpg" alt="Profile image" />
                                     <p className="mb-1 mt-3">Henry Klein</p>
                                     <p className="font-weight-light text-muted mb-0">kleinhenry@gmail.com</p>
                                 </div>

@@ -22,6 +22,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.filter.CorsFilter;
 
 
 @Configuration
@@ -38,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/home/admin").authenticated()
                         .requestMatchers("/home/staff").authenticated()
                         .requestMatchers("/home/client").authenticated()
+                        .requestMatchers("/user/getUsers").authenticated()
                         .requestMatchers("/home/**").authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -73,15 +75,15 @@ public class SecurityConfig {
 
     // Global CORS configuration
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        config.setAllowCredentials(true); // important when using cookies/session
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 }

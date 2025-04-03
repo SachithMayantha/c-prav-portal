@@ -1,108 +1,246 @@
 import React from "react";
 
 const CertDB = () => {
-    return (
-        <div class="row">
+  return (
+    <div class="row">
+      <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <p class="card-description">Horizontal bootstrap tab</p>
+            <ul class="nav nav-tabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <a
+                  class="nav-link active"
+                  id="home-tab"
+                  data-bs-toggle="tab"
+                  href="#home-1"
+                  role="tab"
+                  aria-controls="home"
+                  aria-selected="false"
+                  tabindex="-1"
+                >
+                  Product Info
+                </a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a
+                  class="nav-link"
+                  id="profile-tab"
+                  data-bs-toggle="tab"
+                  href="#profile-1"
+                  role="tab"
+                  aria-controls="profile"
+                  aria-selected="false"
+                  tabindex="-1"
+                >
+                  Certificates
+                </a>
+              </li>
+            </ul>
+            <div class="tab-content">
+              <div
+                class="tab-pane fade active show"
+                id="home-1"
+                role="tabpanel"
+                aria-labelledby="home-tab"
+              >
+                <div class="media">
+                  <div class="row mt-3">
+                    <div class="col-lg-12 col-xl-6">
+                      <form action="" method="POST" name="productDetailsForm">
+                        <div
+                          class="card mb-3"
+                          style={{ border: "1px solid #dbdbd9" }}
+                        >
+                          <div
+                            class="card-header"
+                            data-tour="true"
+                            data-step="1"
+                            data-intro="Comments on certificates, both internal and external appear here.<br>"
+                          >
+                            <div>
+                              <i class="fa fa-fw text-muted fa-info"></i>
+                               Product Information{" "}
+                            </div>
+                          </div>
+                          <div class="card-body">
+                            <div class="form-group row">
+                              <label class="col-xl-3 col-form-label" for="name">
+                                Product-ID
+                              </label>
+                              <div class="col-xl-9">
+                                <input
+                                  class="form-control"
+                                  readonly=""
+                                  type="text"
+                                  value="7967"
+                                />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-xl-3 col-form-label" for="name">
+                                Name
+                              </label>
+                              <div class="col-xl-9">
+                                <input
+                                  class="form-control"
+                                  id="name"
+                                  name="name"
+                                  type="text"
+                                  placeholder="Product Name"
+                                  value="Demo Product A"
+                                />
+                              </div>
+                            </div>
 
-            <div class="col-md-12 grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                        <p class="card-description">Horizontal bootstrap tab</p>
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#home-1" role="tab" aria-controls="home" aria-selected="false" tabindex="-1">Product Info</a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile-1" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">Certificates</a>
-                            </li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="tab-pane fade active show" id="home-1" role="tabpanel" aria-labelledby="home-tab">
-                                <div class="media">
+                            <div class="form-group row">
+                              <label
+                                class="col-xl-3 col-form-label"
+                                for="customer"
+                              >
+                                Company
+                              </label>
+                              <div class="col-xl-9">
+                                <select
+                                  class="form-control"
+                                  id="customer"
+                                  name="customer"
+                                  style={{
+                                    height: "38px",
+                                    paddingTop: "10px",
+                                    paddingBottom: "10px",
+                                  }}
+                                >
+                                  <option>one</option>
+                                  <option>two</option>
+                                </select>
+                              </div>
+                            </div>
 
+                            <div class="form-group row">
+                              <label
+                                class="col-xl-3 col-form-label"
+                                for="comment"
+                              >
+                                Comment
+                              </label>
+                              <div class="col-xl-9">
+                                <textarea
+                                  class="form-control"
+                                  id="comment"
+                                  name="comment"
+                                  rows="11"
+                                  cols="40"
+                                >
+                                  Demo Product automatically created for you by
+                                  TAMSys
+                                </textarea>
+                              </div>
+                            </div>
 
+                            <div class="form-group row">
+                              <label
+                                class="col-xl-3 col-form-label"
+                                for="text-input"
+                              >
+                                Product Manager
+                              </label>
+                              <div class="col-xl-9 col-form-label">
+                                <div>
+                                  <select
+                                    name="customer_product_manager[]"
+                                    class="form-control select2 select2-hidden-accessible"
+                                    multiple=""
+                                    data-select2-id="1"
+                                    tabindex="-1"
+                                    aria-hidden="true"
+                                  ></select>
+                                  <span
+                                    class="select2 select2-container select2-container--default"
+                                    dir="ltr"
+                                    data-select2-id="2"
+                                    style={{ width: "100%" }}
+                                  >
+                                    <span class="selection">
+                                      <span
+                                        class="select2-selection select2-selection--multiple"
+                                        role="combobox"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        tabindex="-1"
+                                        aria-disabled="false"
+                                      >
+                                        <ul class="select2-selection__rendered">
+                                          <li class="select2-search select2-search--inline">
+                                            <input
+                                              class="select2-search__field"
+                                              type="search"
+                                              tabindex="0"
+                                              autocomplete="off"
+                                              autocorrect="off"
+                                              autocapitalize="none"
+                                              spellcheck="false"
+                                              role="searchbox"
+                                              aria-autocomplete="list"
+                                              placeholder=""
+                                              style={{ width: "0.75em;" }}
+                                            />
+                                          </li>
+                                        </ul>
+                                      </span>
+                                    </span>
+                                    <span
+                                      class="dropdown-wrapper"
+                                      aria-hidden="true"
+                                    ></span>
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <input
+                              type="hidden"
+                              name="check_compliance_score"
+                              value="1"
+                            />
+                            <input
+                              type="hidden"
+                              name="show_compliance_score"
+                              value="3"
+                            />
+                          </div>
 
+                          <div class="card-footer text-right">
+                            <button
+                              type="submit"
+                              name="generalButtonEOL"
+                              id="generalButtonEOL"
+                              class="btn btn-danger"
+                            >
+                              Set all Certs for this Product immediately EOL
+                            </button>
+                            <button
+                              type="submit"
+                              class="btn btn-secondary"
+                              id="generalButtonDele"
+                              name="general"
+                              value="prodGeneralDele"
+                            >
+                              <i class="fa fa-fw fa-archive"></i> Archive
+                            </button>
+                            <button
+                              type="submit"
+                              class="btn btn-primary"
+                              id="generalButtonSave"
+                              name="general"
+                              value="prodGeneralSave"
+                            >
+                              <i class="fa fa-fw fa-save"></i> Save
+                            </button>
+                          </div>
+                        </div>
+                      </form>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-                                    <div class="row mt-3">
-
-                                        <div class="col-lg-12 col-xl-6">
-                                            <form action="" method="POST" name="productDetailsForm">
-                                                <div class="card mb-3" style={{ border: '1px solid #dbdbd9' }}>
-                                                    <div class="card-header" data-tour="true" data-step="1" data-intro="Comments on certificates, both internal and external appear here.<br>">
-                                                        <div>
-                                                            <i class="fa fa-fw text-muted fa-info"></i> Product Information                        </div>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="form-group row">
-                                                            <label class="col-xl-3 col-form-label" for="name">Product-ID</label>
-                                                            <div class="col-xl-9">
-                                                                <input class="form-control" readonly="" type="text" value="7967" />
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group row">
-                                                            <label class="col-xl-3 col-form-label" for="name">Name</label>
-                                                            <div class="col-xl-9">
-                                                                <input class="form-control" id="name" name="name" type="text" placeholder="Product Name" value="Demo Product A" />
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="form-group row">
-                                                            <label class="col-xl-3 col-form-label" for="customer">Company</label>
-                                                            <div class="col-xl-9">
-                                                                <select class="form-control" id="customer" name="customer" style={{height: '38px', paddingTop: '10px', paddingBottom: '10px'}}>
-                                                                    <option>one</option>
-                                                                    <option>two</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="form-group row">
-                                                            <label class="col-xl-3 col-form-label" for="comment">Comment</label>
-                                                            <div class="col-xl-9"><textarea class="form-control" id="comment" name="comment" rows="11" cols="40">Demo Product automatically created for you by TAMSys</textarea></div>
-                                                        </div>
-
-
-                                                        <div class="form-group row">
-                                                            <label class="col-xl-3 col-form-label" for="text-input">Product Manager</label>
-                                                            <div class="col-xl-9 col-form-label">
-                                                                <div>
-                                                                    <select name="customer_product_manager[]" class="form-control select2 select2-hidden-accessible" multiple="" data-select2-id="1" tabindex="-1" aria-hidden="true">
-                                                                    </select><span class="select2 select2-container select2-container--default" dir="ltr" data-select2-id="2" style={{ width: '100%' }}><span class="selection"><span class="select2-selection select2-selection--multiple" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1" aria-disabled="false"><ul class="select2-selection__rendered"><li class="select2-search select2-search--inline"><input class="select2-search__field" type="search" tabindex="0" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" role="searchbox" aria-autocomplete="list" placeholder="" style={{ width: "0.75em;" }} /></li></ul></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <input type="hidden" name="check_compliance_score" value="1" />
-                                                        <input type="hidden" name="show_compliance_score" value="3" />
-
-
-
-                                                    </div>
-
-
-                                                    <div class="card-footer text-right">
-                                                        <button type="submit" name="generalButtonEOL" id="generalButtonEOL" class="btn btn-danger">Set all Certs for this Product immediately EOL</button>
-                                                        <button type="submit" class="btn btn-secondary" id="generalButtonDele" name="general" value="prodGeneralDele"><i class="fa fa-fw fa-archive"></i> Archive</button>
-                                                        <button type="submit" class="btn btn-primary" id="generalButtonSave" name="general" value="prodGeneralSave"><i class="fa fa-fw fa-save"></i> Save</button>
-                                                    </div>
-
-                                                </div>
-
-                                            </form>
-                                            
-                                            {/* <form action="" method="POST" enctype="multipart/form-data" name="prod_photos_form">
+                      {/* <form action="" method="POST" enctype="multipart/form-data" name="prod_photos_form">
                                                 <div class="card mb-3" style={{ border: '1px solid #dbdbd9' }}>
                                                     <div class="card-header" data-tour="true" data-step="2" data-intro="Here you can see the photos uploaded for this product. You can upload a total of 6 photos.<br>"><i class="text-muted fa fa-fw fa-images"></i> Product Photos</div>
                                                     <div class="card-body">
@@ -417,136 +555,527 @@ const CertDB = () => {
                                                 </div>
 
                                             </div> */}
-
-
-                                        </div>
-
-
-
-                                        <div class="col-lg-12 col-xl-6">
-
-
-                                            <form method="post" action="">
-                                                <div class="card mb-3" style={{ border: '1px solid #dbdbd9' }}>
-                                                    <div class="card-header">
-                                                        <i class="fa fa-satellite-dish"></i>
-                                                        Product Technologies
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="card">
-                                                            <div class="card-header">
-                                                                Technologies
-                                                            </div>
-                                                            <div class="card-body">
-                                                                <div class="form-group row mb-1">
-                                                                    <div class="col-xl-12 col-lg-12">
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="1" type="checkbox" name="frequencies[]" value="1" />    <label for="1" class="mr-1">125 kHz: Immobiliser</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="2" type="checkbox" name="frequencies[]" value="2" />    <label for="2" class="mr-1">13,56 MHz: NFC</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="3" type="checkbox" name="frequencies[]" value="3" />    <label for="3" class="mr-1">315 MHz: SRD</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="4" type="checkbox" name="frequencies[]" value="4" />    <label for="4" class="mr-1">433 MHz: SRD</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="5" type="checkbox" name="frequencies[]" value="5" />    <label for="5" class="mr-1">868 MHz: SRD</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="15" type="checkbox" name="frequencies[]" value="15" />    <label for="15" class="mr-1">868 MHz: RFID</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="12" type="checkbox" name="frequencies[]" value="12" />    <label for="12" class="mr-1">920 MHz: RFID</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="16" type="checkbox" name="frequencies[]" value="16" />    <label for="16" class="mr-1">920 MHz: SRD</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="7" type="checkbox" name="frequencies[]" value="7" />    <label for="7" class="mr-1">2,4 GHz: BT</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="13" type="checkbox" name="frequencies[]" value="13" />    <label for="13" class="mr-1">2,4 GHz: WLAN</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="33" type="checkbox" name="frequencies[]" value="33" />    <label for="33" class="mr-1">2,4 Ghz: ISM PP</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="8" type="checkbox" name="frequencies[]" value="8" />    <label for="8" class="mr-1">5 GHz: WLAN Master</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="14" type="checkbox" name="frequencies[]" value="14" />    <label for="14" class="mr-1">5 GHz: WLAN Client</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="17" type="checkbox" name="frequencies[]" value="17" />    <label for="17" class="mr-1">Receiver: Rx only</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="9" type="checkbox" name="frequencies[]" value="9" />    <label for="9" class="mr-1">24 GHz: Radar</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="18" type="checkbox" name="frequencies[]" value="18" />    <label for="18" class="mr-1">24 GHz UWB: Radar</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="19" type="checkbox" name="frequencies[]" value="19" />    <label for="19" class="mr-1">60 GHz: Radar</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="10" type="checkbox" name="frequencies[]" value="10" />    <label for="10" class="mr-1">76-77 GHz: Radar</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="23" type="checkbox" name="frequencies[]" value="23" />    <label for="23" class="mr-1">77-81 GHz: Radar</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="11" type="checkbox" name="frequencies[]" value="11" />    <label for="11" class="mr-1">120 GHz: Radar</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="20" type="checkbox" name="frequencies[]" value="20" />    <label for="20" class="mr-1">600-900 MHz: 5G Low-Band </label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="26" type="checkbox" name="frequencies[]" value="26" />    <label for="26" class="mr-1">1-6 GHz: 5G Mid-Band</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="27" type="checkbox" name="frequencies[]" value="27" />    <label for="27" class="mr-1">24-40 GHz: 5G High-Band </label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="28" type="checkbox" name="frequencies[]" value="28" />    <label for="28" class="mr-1">450-900 MHz: 4G LTE Low-Band </label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="29" type="checkbox" name="frequencies[]" value="29" />    <label for="29" class="mr-1">1-3 GHz: 4G LTE Mid-Band</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="30" type="checkbox" name="frequencies[]" value="30" />    <label for="30" class="mr-1">3-4 GHz: 4G LTE High-Band </label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="21" type="checkbox" name="frequencies[]" value="21" />    <label for="21" class="mr-1">800-960 MHz: 3G UMTS</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="31" type="checkbox" name="frequencies[]" value="31" />    <label for="31" class="mr-1">1,5-2,2 GHz: 3G UMTS</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="22" type="checkbox" name="frequencies[]" value="22" />    <label for="22" class="mr-1">6-9 GHz: UWB</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="24" type="checkbox" name="frequencies[]" value="24" />    <label for="24" class="mr-1">125 kHz: WPT</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="25" type="checkbox" name="frequencies[]" value="25" />    <label for="25" class="mr-1">360 kHz: WPT</label></div>
-                                                                        <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">    <input id="32" type="checkbox" name="frequencies[]" value="32" />    <label for="32" class="mr-1">1-2 GHz: GNSS (Rx only)</label></div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="card-footer text-right">
-                                                        <button type="submit" name="save_technologies" class="btn btn-primary"><i class="fa fa-fw fa-save"></i> Save</button>
-                                                    </div>
-                                                </div>
-                                            </form>
-
-
-                                            <form method="post" action="">
-                                                <div class="card mb-3" style={{ border: '1px solid #dbdbd9' }}>
-                                                    <div class="card-header" data-tour="true" data-step="3" data-intro="Here you can see the product ID with further information.<br>">
-                                                        <i class="fa fa-table"></i>
-                                                        Product-ID (PID)                            <div class="card-actions">
-                                                            <div id="pidWidgetModeToggle"></div>
-                                                            <a data-tour="true" data-step="4" data-intro="If you want to edit the product ID, click here.<br>" href="product_pid.php?pid=kmxAjihHd20Lek1soPZO8L86jrPj5Z1meoQy6mk0jcMQ8Wb" title="" data-original-title="Edit PID"><i class="fa fa-fw fa-edit"></i></a>
-                                                        </div>
-                                                    </div>
-                                                    <div class="pidOemWidget" id="PID_OEM_TARGET_DIV"></div>
-                                                    <div class="card-body pidSysWidget" id="pidCards">
-                                                        <div class="card">
-                                                            <div class="card-header">
-                                                                Basic Keys                                    <div class="card-actions"><a href="product_detail?pid=kmxAjihHd20Lek1soPZO8L86jrPj5Z1meoQy6mk0jcMQ8Wb&amp;pidExport=bmMOpA4PgOQ-tPVbcmRBmGc72NA9DPfb8Krw0kWg2-2cqW2" target="_blank"><i class="fas fa-file-export" title="" data-original-title="Export Basic PID Keys"></i></a></div>
-                                                            </div>
-                                                            <div class="card-body">
-                                                                <div class="alert alert-warning">No PID available.</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-
-                                                    <div class="card-footer pidSysWidget">
-                                                        <div id="pidReviewStatus">
-                                                            <div class="text-muted pb-3"><i class="fa fa-fw fa-info-square pr-4"></i>Currently, this PID is not undergoing Customer review.</div>                            </div>
-
-
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-
-
-                                    </div>
-
-
-
-
-
-
-
-
-
-
-
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="profile-1" role="tabpanel" aria-labelledby="profile-tab">
-                                <div class="media">
-                                    <img class="me-3 w-25 rounded" src="../../../assets/images/faces/face12.jpg" alt="sample image" />
-                                    <div class="media-body">
-                                        <h4 class="mt-0">John Doe</h4>
-                                        <p> Fail most room even gone her end like. Comparison dissimilar unpleasant six compliment two unpleasing any add. Ashamed my company thought wishing colonel it prevent he in. Pretended residence are something far engrossed old off. </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
                     </div>
-                </div>
-            </div>
 
-        </div>);
+                    <div class="col-lg-12 col-xl-6">
+                      <form method="post" action="">
+                        <div
+                          class="card mb-3"
+                          style={{ border: "1px solid #dbdbd9" }}
+                        >
+                          <div class="card-header">
+                            <i class="fa fa-satellite-dish"></i>
+                            Product Technologies
+                          </div>
+                          <div class="card-body">
+                            <div class="card">
+                              <div class="card-header">Technologies</div>
+                              <div class="card-body">
+                                <div class="form-group row mb-1">
+                                  <div class="col-xl-12 col-lg-12">
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="1"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="1"
+                                      />{" "}
+                                      <label for="1" class="mr-1">
+                                        125 kHz: Immobiliser
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="2"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="2"
+                                      />{" "}
+                                      <label for="2" class="mr-1">
+                                        13,56 MHz: NFC
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="3"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="3"
+                                      />{" "}
+                                      <label for="3" class="mr-1">
+                                        315 MHz: SRD
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="4"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="4"
+                                      />{" "}
+                                      <label for="4" class="mr-1">
+                                        433 MHz: SRD
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="5"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="5"
+                                      />{" "}
+                                      <label for="5" class="mr-1">
+                                        868 MHz: SRD
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="15"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="15"
+                                      />{" "}
+                                      <label for="15" class="mr-1">
+                                        868 MHz: RFID
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="12"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="12"
+                                      />{" "}
+                                      <label for="12" class="mr-1">
+                                        920 MHz: RFID
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="16"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="16"
+                                      />{" "}
+                                      <label for="16" class="mr-1">
+                                        920 MHz: SRD
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="7"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="7"
+                                      />{" "}
+                                      <label for="7" class="mr-1">
+                                        2,4 GHz: BT
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="13"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="13"
+                                      />{" "}
+                                      <label for="13" class="mr-1">
+                                        2,4 GHz: WLAN
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="33"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="33"
+                                      />{" "}
+                                      <label for="33" class="mr-1">
+                                        2,4 Ghz: ISM PP
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="8"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="8"
+                                      />{" "}
+                                      <label for="8" class="mr-1">
+                                        5 GHz: WLAN Master
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="14"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="14"
+                                      />{" "}
+                                      <label for="14" class="mr-1">
+                                        5 GHz: WLAN Client
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="17"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="17"
+                                      />{" "}
+                                      <label for="17" class="mr-1">
+                                        Receiver: Rx only
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="9"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="9"
+                                      />{" "}
+                                      <label for="9" class="mr-1">
+                                        24 GHz: Radar
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="18"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="18"
+                                      />{" "}
+                                      <label for="18" class="mr-1">
+                                        24 GHz UWB: Radar
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="19"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="19"
+                                      />{" "}
+                                      <label for="19" class="mr-1">
+                                        60 GHz: Radar
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="10"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="10"
+                                      />{" "}
+                                      <label for="10" class="mr-1">
+                                        76-77 GHz: Radar
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="23"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="23"
+                                      />{" "}
+                                      <label for="23" class="mr-1">
+                                        77-81 GHz: Radar
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="11"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="11"
+                                      />{" "}
+                                      <label for="11" class="mr-1">
+                                        120 GHz: Radar
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="20"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="20"
+                                      />{" "}
+                                      <label for="20" class="mr-1">
+                                        600-900 MHz: 5G Low-Band{" "}
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="26"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="26"
+                                      />{" "}
+                                      <label for="26" class="mr-1">
+                                        1-6 GHz: 5G Mid-Band
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="27"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="27"
+                                      />{" "}
+                                      <label for="27" class="mr-1">
+                                        24-40 GHz: 5G High-Band{" "}
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="28"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="28"
+                                      />{" "}
+                                      <label for="28" class="mr-1">
+                                        450-900 MHz: 4G LTE Low-Band{" "}
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="29"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="29"
+                                      />{" "}
+                                      <label for="29" class="mr-1">
+                                        1-3 GHz: 4G LTE Mid-Band
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="30"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="30"
+                                      />{" "}
+                                      <label for="30" class="mr-1">
+                                        3-4 GHz: 4G LTE High-Band{" "}
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="21"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="21"
+                                      />{" "}
+                                      <label for="21" class="mr-1">
+                                        800-960 MHz: 3G UMTS
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="31"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="31"
+                                      />{" "}
+                                      <label for="31" class="mr-1">
+                                        1,5-2,2 GHz: 3G UMTS
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="22"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="22"
+                                      />{" "}
+                                      <label for="22" class="mr-1">
+                                        6-9 GHz: UWB
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="24"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="24"
+                                      />{" "}
+                                      <label for="24" class="mr-1">
+                                        125 kHz: WPT
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="25"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="25"
+                                      />{" "}
+                                      <label for="25" class="mr-1">
+                                        360 kHz: WPT
+                                      </label>
+                                    </div>
+                                    <div class="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
+                                      {" "}
+                                      <input
+                                        id="32"
+                                        type="checkbox"
+                                        name="frequencies[]"
+                                        value="32"
+                                      />{" "}
+                                      <label for="32" class="mr-1">
+                                        1-2 GHz: GNSS (Rx only)
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-right">
+                            <button
+                              type="submit"
+                              name="save_technologies"
+                              class="btn btn-primary"
+                            >
+                              <i class="fa fa-fw fa-save"></i> Save
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+
+                      <form method="post" action="">
+                        <div
+                          class="card mb-3"
+                          style={{ border: "1px solid #dbdbd9" }}
+                        >
+                          <div
+                            class="card-header"
+                            data-tour="true"
+                            data-step="3"
+                            data-intro="Here you can see the product ID with further information.<br>"
+                          >
+                            <i class="fa fa-table"></i>
+                            Product-ID (PID){" "}
+                            <div class="card-actions">
+                              <div id="pidWidgetModeToggle"></div>
+                              <a
+                                data-tour="true"
+                                data-step="4"
+                                data-intro="If you want to edit the product ID, click here.<br>"
+                                href="product_pid.php?pid=kmxAjihHd20Lek1soPZO8L86jrPj5Z1meoQy6mk0jcMQ8Wb"
+                                title=""
+                                data-original-title="Edit PID"
+                              >
+                                <i class="fa fa-fw fa-edit"></i>
+                              </a>
+                            </div>
+                          </div>
+                          <div
+                            class="pidOemWidget"
+                            id="PID_OEM_TARGET_DIV"
+                          ></div>
+                          <div class="card-body pidSysWidget" id="pidCards">
+                            <div class="card">
+                              <div class="card-header">
+                                Basic Keys{" "}
+                                <div class="card-actions">
+                                  <a
+                                    href="product_detail?pid=kmxAjihHd20Lek1soPZO8L86jrPj5Z1meoQy6mk0jcMQ8Wb&amp;pidExport=bmMOpA4PgOQ-tPVbcmRBmGc72NA9DPfb8Krw0kWg2-2cqW2"
+                                    target="_blank"
+                                  >
+                                    <i
+                                      class="fas fa-file-export"
+                                      title=""
+                                      data-original-title="Export Basic PID Keys"
+                                    ></i>
+                                  </a>
+                                </div>
+                              </div>
+                              <div class="card-body">
+                                <div class="alert alert-warning">
+                                  No PID available.
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="card-footer pidSysWidget">
+                            <div id="pidReviewStatus">
+                              <div class="text-muted pb-3">
+                                <i class="fa fa-fw fa-info-square pr-4"></i>
+                                Currently, this PID is not undergoing Customer
+                                review.
+                              </div>{" "}
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="tab-pane fade"
+                id="profile-1"
+                role="tabpanel"
+                aria-labelledby="profile-tab"
+              >
+                <div class="media">
+                  <img
+                    class="me-3 w-25 rounded"
+                    src="../../../assets/images/faces/face12.jpg"
+                    alt="sample image"
+                  />
+                  <div class="media-body">
+                    <h4 class="mt-0">John Doe</h4>
+                    <p>
+                      {" "}
+                      Fail most room even gone her end like. Comparison
+                      dissimilar unpleasant six compliment two unpleasing any
+                      add. Ashamed my company thought wishing colonel it prevent
+                      he in. Pretended residence are something far engrossed old
+                      off.{" "}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default CertDB;
