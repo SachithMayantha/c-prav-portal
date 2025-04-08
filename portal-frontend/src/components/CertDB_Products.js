@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/AxiosConfig";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { FaTrash, FaUpload } from "react-icons/fa";
+import Button from "@mui/material/Button";
+import { useUserRoles } from "../hooks/useUserRoles";
 
 const CertDB_Products = () => {
+  const roles = useUserRoles();
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -14,9 +17,7 @@ const CertDB_Products = () => {
   const [formData, setFormData] = useState({
     productId: "",
     companyName: "",
-    comments: "",
-    productManager: "",
-    photos: "",
+    status: "Active",
   });
   const [selectedFile, setSelectedFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
@@ -42,7 +43,13 @@ const CertDB_Products = () => {
 
   const handleRowClick = (product) => {
     navigate("/cert-db-product-info", {
-      state: { productId: product.productId },
+      state: {
+        productId: product.productId,
+        companyName: product.companyName,
+        comments: product.comments,
+        productManager: product.productManager,
+        status: product.status,
+      },
     });
   };
 
@@ -95,12 +102,9 @@ const CertDB_Products = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Send the request with just the form data and file name
       await axiosInstance.post("/product/save", {
         companyName: formData.companyName,
-        comments: formData.comments,
-        productManager: formData.productManager,
-        photos: formData.photos, // This will be just the file name string
+        status: formData.status,
       });
 
       handleClose();
@@ -108,9 +112,7 @@ const CertDB_Products = () => {
       setFormData({
         productId: "",
         companyName: "",
-        comments: "",
-        productManager: "",
-        photos: "",
+        status: "Active",
       });
       setSelectedFile(null);
       setFilePreview(null);
@@ -143,7 +145,12 @@ const CertDB_Products = () => {
                   </a>
                 </li>
               </ul>
-              <Button variant="primary" onClick={handleShow}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleShow}
+                startIcon={<span>+</span>}
+              >
                 Add Product
               </Button>
             </div>
@@ -166,57 +173,17 @@ const CertDB_Products = () => {
                     />
                   </Form.Group>
                   <Form.Group className="mb-3">
-                    <Form.Label>Comments</Form.Label>
-                    <Form.Control
-                      as="textarea"
-                      name="comments"
-                      value={formData.comments}
+                    <Form.Label>Status</Form.Label>
+                    <Form.Select
+                      name="status"
+                      value={formData.status}
                       onChange={handleInputChange}
                       required
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Product Manager</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="productManager"
-                      value={formData.productManager}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Photos</Form.Label>
-                    <div className="d-flex align-items-center">
-                      <Form.Control
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="me-2"
-                      />
-                      <Button
-                        variant="outline-secondary"
-                        onClick={() =>
-                          document.querySelector('input[type="file"]').click()
-                        }
-                      >
-                        <FaUpload /> Upload
-                      </Button>
-                    </div>
-                    {filePreview && (
-                      <div className="mt-2">
-                        <img
-                          src={filePreview}
-                          alt="Preview"
-                          style={{ maxWidth: "100%", maxHeight: "150px" }}
-                        />
-                        <div className="text-muted small mt-1">
-                          {selectedFile
-                            ? selectedFile.name
-                            : "No file selected"}
-                        </div>
-                      </div>
-                    )}
+                    >
+                      <option value="Active">Active</option>
+                      <option value="Renew">Renew</option>
+                      <option value="Inactive">Inactive</option>
+                    </Form.Select>
                   </Form.Group>
                   <div className="d-flex justify-content-end gap-2">
                     <Button variant="secondary" onClick={handleClose}>
@@ -276,13 +243,9 @@ const CertDB_Products = () => {
                         <table className="table table-hover table-striped">
                           <thead className="thead-light">
                             <tr>
-                              <th>Product ID</th>
                               <th>Product Name</th>
-                              <th>Product Manager</th>
-                              <th>Comments</th>
-                              <th>Photos</th>
                               <th>Status</th>
-                              <th>Actions</th>
+                              {roles.includes("admin") && <th>Actions</th>}
                             </tr>
                           </thead>
                           <tbody>
@@ -292,26 +255,32 @@ const CertDB_Products = () => {
                                 onClick={() => handleRowClick(product)}
                                 style={{ cursor: "pointer" }}
                               >
-                                <td>{product.productId}</td>
                                 <td>{product.companyName}</td>
-                                <td>{product.productManager}</td>
-                                <td>{product.comments}</td>
-                                <td>{product.photos}</td>
                                 <td>
-                                  <span className="badge bg-success">
-                                    Active
+                                  <span
+                                    className={`badge ${
+                                      product.status === "Active"
+                                        ? "bg-success"
+                                        : product.status === "Renew"
+                                        ? "bg-warning"
+                                        : "bg-danger"
+                                    }`}
+                                  >
+                                    {product.status}
                                   </span>
                                 </td>
                                 <td>
-                                  <Button
-                                    variant="link"
-                                    className="text-danger p-0"
-                                    onClick={(e) =>
-                                      handleDeleteClick(product, e)
-                                    }
-                                  >
-                                    <FaTrash />
-                                  </Button>
+                                  {roles.includes("admin") && (
+                                    <Button
+                                      variant="link"
+                                      className="text-danger p-0"
+                                      onClick={(e) =>
+                                        handleDeleteClick(product, e)
+                                      }
+                                    >
+                                      <FaTrash />
+                                    </Button>
+                                  )}
                                 </td>
                               </tr>
                             ))}

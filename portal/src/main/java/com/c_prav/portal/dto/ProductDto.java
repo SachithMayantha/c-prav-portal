@@ -14,4 +14,5 @@ public class ProductDto {
     private String comments;
     private String productManager;
     private String photos;
+    private String status;
 }

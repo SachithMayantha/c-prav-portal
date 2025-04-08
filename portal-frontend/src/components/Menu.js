@@ -1,32 +1,31 @@
-import React, { Component } from "react";
+import React from "react";
 import Profile from "./Profile";
 import DashboardBtn from "./DashboardBtn";
 import CertDbBtn from "./CertDbBtn";
 import UsersBtn from "./UsersBtn";
+import { useUserRoles } from "../hooks/useUserRoles";
 
-export class Menu extends Component {
-  render() {
-    return (
-      <nav className="sidebar sidebar-offcanvas" id="sidebar">
-        <ul className="nav">
-          <li className="nav-item navbar-brand-mini-wrapper">
-            <a className="nav-link navbar-brand brand-logo-mini" href="index.html">
-              {/* <img src="/images/cprav_logo.webp" alt="logo" style={{height: '65px' ,width: '80px'}}/> */}
-            </a>
-          </li>
-          <Profile />
-          {/* <li className="nav-item nav-category">
-                        <span className="nav-link">Dashboard</span>
-                    </li> */}
+const Menu = () => {
+  const roles = useUserRoles(); // Get user roles
 
-          <DashboardBtn />
-          <CertDbBtn />
-          {/* <li className="nav-item nav-category"><span className="nav-link">Certificates</span></li> */}
-          <UsersBtn />
-        </ul>
-      </nav>
-    );
-  }
-}
+  return (
+    <nav className="sidebar sidebar-offcanvas" id="sidebar">
+      <ul className="nav">
+        <li className="nav-item navbar-brand-mini-wrapper">
+          <a
+            className="nav-link navbar-brand brand-logo-mini"
+            href="index.html"
+          >
+            {/* <img src="/images/cprav_logo.webp" alt="logo" style={{height: '65px' ,width: '80px'}}/> */}
+          </a>
+        </li>
+        <Profile />
+        <DashboardBtn />
+        <CertDbBtn />
+        {roles.includes("admin") && <UsersBtn />}
+      </ul>
+    </nav>
+  );
+};
 
 export default Menu;

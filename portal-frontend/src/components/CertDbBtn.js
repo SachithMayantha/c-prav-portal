@@ -7,7 +7,7 @@ export class CertDbBtn extends Component {
       <div>
         <li className="nav-item">
           <Link className="nav-link" to="/cert-db">
-            <span className="menu-title2">Cert-DB</span>
+            <span className="menu-title">Cert-DB</span>
             <i className="icon-layers menu-icon"></i>
           </Link>
         </li>

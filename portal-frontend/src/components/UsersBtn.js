@@ -7,7 +7,7 @@ export class UsersBtn extends Component {
       <div>
         <li className="nav-item">
           <Link className="nav-link" to="/user">
-            <span className="menu-title2">Users</span>
+            <span className="menu-title">Users</span>
             <i className="icon-layers menu-icon"></i>
           </Link>
         </li>
