@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("home")
 @CrossOrigin(origins = "http://localhost:3000")
-public class TestController {
+public class MainController {
 
     @GetMapping("admin")
     public String adminAccess(){

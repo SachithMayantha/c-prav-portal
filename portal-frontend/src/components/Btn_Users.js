@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
-export class UsersBtn extends Component {
+export class Btn_Users extends Component {
   render() {
     return (
       <div>
@@ -16,4 +16,4 @@ export class UsersBtn extends Component {
   }
 }
 
-export default UsersBtn;
+export default Btn_Users;

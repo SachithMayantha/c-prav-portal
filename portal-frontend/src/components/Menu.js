@@ -1,9 +1,9 @@
 import React from "react";
 import Profile from "./Profile";
-import DashboardBtn from "./DashboardBtn";
-import CertDbBtn from "./CertDbBtn";
-import UsersBtn from "./UsersBtn";
-import ClientDbBtn from "./Btn_ClientDB";
+import Btn_Dashboard from "./Btn_Dashboard";
+import Btn_CertDb from "./Btn_CertDb";
+import Btn_Users from "./Btn_Users";
+import Btn_ClientDB from "./Btn_ClientDB";
 import { useUserRoles } from "../hooks/useUserRoles";
 
 const Menu = () => {
@@ -21,10 +21,10 @@ const Menu = () => {
           </a>
         </li>
         <Profile />
-        <DashboardBtn />
-        {roles.includes("client") && <CertDbBtn />}
-        {roles.includes("admin" || "staff") && <ClientDbBtn />}
-        {roles.includes("admin") && <UsersBtn />}
+        <Btn_Dashboard />
+        {roles.includes("client") && <Btn_CertDb />}
+        {roles.includes("admin" || "staff") && <Btn_ClientDB />}
+        {roles.includes("admin") && <Btn_Users />}
       </ul>
     </nav>
   );
