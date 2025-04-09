@@ -1,4 +1,5 @@
 import React from "react";
+import Button from "@mui/material/Button";
 import { useLocation } from "react-router-dom";
 
 const CertDB_ProductInfo = () => {
@@ -742,6 +743,17 @@ const CertDB_ProductInfo = () => {
                   </div>
                   <div className="card-body">
                     <div className="table-responsive">
+
+                    <div style={{ textAlign: 'right', marginBottom: '10px'}}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          startIcon={<span>+</span>}
+                        >
+                          Add Test Certificates
+                        </Button>
+                      </div>
+
                       <table className="table table-hover table-striped">
                         <thead className="thead-light">
                           <tr>
@@ -857,6 +869,15 @@ const CertDB_ProductInfo = () => {
                   <div className="card-body">
                     <div className="table-responsive">
 
+                      <div style={{ textAlign: 'right', marginBottom: '10px'}}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          startIcon={<span>+</span>}
+                        >
+                          Add Test Report
+                        </Button>
+                      </div>
 
                       <table className="table table-hover table-striped mb-3">
                         <thead className="thead-light">
