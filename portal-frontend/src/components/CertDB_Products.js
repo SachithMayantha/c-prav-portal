@@ -128,7 +128,7 @@ const CertDB_Products = () => {
       <div className="col-md-12 grid-margin stretch-card">
         <div className="card">
           <div className="card-body">
-            <div className="d-flex justify-content-between align-items-center mb-3">
+            <div className="d-flex justify-content-between align-items-center">
               <ul className="nav nav-tabs" role="tablist">
                 <li className="nav-item" role="presentation">
                   <a

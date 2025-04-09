@@ -14,7 +14,7 @@ const CertDB_ProductInfo = () => {
               <li className="nav-item" role="presentation">
                 <a
                   className="nav-link active"
-                  id="home-tab"
+                  id="product_info"
                   data-bs-toggle="tab"
                   href="#home-1"
                   role="tab"
@@ -28,7 +28,7 @@ const CertDB_ProductInfo = () => {
               <li className="nav-item" role="presentation">
                 <a
                   className="nav-link"
-                  id="profile-tab"
+                  id="certificates"
                   data-bs-toggle="tab"
                   href="#profile-1"
                   role="tab"
@@ -37,6 +37,20 @@ const CertDB_ProductInfo = () => {
                   tabIndex="-1"
                 >
                   Certificates
+                </a>
+              </li>
+              <li className="nav-item" role="presentation">
+                <a
+                  className="nav-link"
+                  id="test_reports"
+                  data-bs-toggle="tab"
+                  href="#profile-3"
+                  role="tab"
+                  aria-controls="profile"
+                  aria-selected="false"
+                  tabIndex="-1"
+                >
+                  Test Reports
                 </a>
               </li>
             </ul>
@@ -712,8 +726,7 @@ const CertDB_ProductInfo = () => {
                 className="tab-pane fade"
                 id="profile-1"
                 role="tabpanel"
-                aria-labelledby="profile-tab"
-              >
+                aria-labelledby="profile-tab">
                 <div
                   className="card card_product_detail_certificates"
                   style={{ border: "1px solid #dbdbd9" }}
@@ -819,6 +832,105 @@ const CertDB_ProductInfo = () => {
                   </div>
                 </div>
               </div>
+
+
+
+
+              <div
+                className="tab-pane fade"
+                id="profile-3"
+                role="tabpanel"
+                aria-labelledby="profile-tab">
+                <div
+                  className="card card_product_detail_certificates"
+                  style={{ border: "1px solid #dbdbd9" }}
+                >
+                  <div
+                    className="card-header"
+                    data-tour="true"
+                    data-step="1"
+                    data-intro="Here you can see a list of all certificates in this product. The number in brackets shows how many certificates there are."
+                  >
+                    <i className="fa fa-lg fa-fw fa-file-certificate"></i>{" "}
+                    Test Reports
+                  </div>
+                  <div className="card-body">
+                    <div className="table-responsive">
+
+
+                      <table className="table table-hover table-striped mb-3">
+                        <thead className="thead-light">
+                          <tr>
+                            <th width="5%">
+                              <input type="checkbox" />
+                            </th>
+                            <th width="35%">Exhibit Name</th>
+                            <th width="15%">File Category</th>
+                            <th width="10%">Filetype</th>
+                            <th width="10%">Date</th>
+                            <th width="10%">Uploaded by</th>
+                            <th width="10%">Allow Deletion</th>
+                            <th width="10%" className="text-right"></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>
+                              <input type="checkbox" />
+                            </td>
+                            <td>
+                              <a
+                                href="/download.php?fid=tzJ3dA4HqCxtimsLk4Mx9KoR0gFu5Wm13ApeL1KztjA"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                Test_Report_EMC_36174286380.pdf
+                              </a>
+                            </td>
+                            <td>Test Report EMC</td>
+                            <td>
+                              <div>application/pdf</div>
+                              <div className="small text-muted">0.03 MB</div>
+                            </td>
+                            <td>2025-03-25 01:50:09</td>
+                            <td>richa@c-prav.com</td>
+                            <td>
+                              <input type="checkbox" />
+                            </td>
+                            <td className="text-right buttons">
+                              <a
+                                className="btn btn-sm btn-outline-gray-500 mr-1"
+                                href="/product_detail_exhibits_edit.php?pid=1938&id=tzJ3dA4HqCxtimsLk4Mx9KoR0gFu5Wm13ApeL1KztjA"
+                                title="Edit Testreport"
+                              >
+                                <i className="fa fa-fw fa-edit"></i>
+                              </a>
+                              <a
+                                className="btn btn-sm btn-outline-gray-500 mr-1"
+                                href="#"
+                                title="Archive Testreport"
+                              >
+                                <i className="fa fa-fw fa-archive"></i>
+                              </a>
+                              <a
+                                className="btn btn-sm btn-outline-gray-500 mr-1"
+                                href="#"
+                                title="Delete Exhibit"
+                              >
+                                <i className="fa fa-fw fa-trash ibl-color-negative"></i>
+                              </a>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+
+
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
