@@ -3,6 +3,7 @@ import Profile from "./Profile";
 import DashboardBtn from "./DashboardBtn";
 import CertDbBtn from "./CertDbBtn";
 import UsersBtn from "./UsersBtn";
+import ClientDbBtn from "./Btn_ClientDB";
 import { useUserRoles } from "../hooks/useUserRoles";
 
 const Menu = () => {
@@ -21,7 +22,8 @@ const Menu = () => {
         </li>
         <Profile />
         <DashboardBtn />
-        <CertDbBtn />
+        {roles.includes("client") && <CertDbBtn />}
+        {roles.includes("admin" || "staff") && <ClientDbBtn />}
         {roles.includes("admin") && <UsersBtn />}
       </ul>
     </nav>
