@@ -1,12 +1,13 @@
 import React from "react";
 import Profile from "./Profile";
-import DashboardBtn from "./DashboardBtn";
-import CertDbBtn from "./CertDbBtn";
-import UsersBtn from "./UsersBtn";
+import Btn_Dashboard from "./Btn_Dashboard";
+import Btn_CertDb from "./Btn_CertDb";
+import Btn_Users from "./Btn_Users";
+import Btn_ClientDB from "./Btn_ClientDB";
 import { useUserRoles } from "../hooks/useUserRoles";
 
 const Menu = () => {
-  const roles = useUserRoles(); // ✅ Get roles safely
+  const roles = useUserRoles(); // Get user roles
 
   return (
     <nav className="sidebar sidebar-offcanvas" id="sidebar">
@@ -16,14 +17,14 @@ const Menu = () => {
             className="nav-link navbar-brand brand-logo-mini"
             href="index.html"
           >
-            <img src="/images/logo-mini.svg" alt="logo" />
+            {/* <img src="/images/cprav_logo.webp" alt="logo" style={{height: '65px' ,width: '80px'}}/> */}
           </a>
         </li>
-
         <Profile />
-        <DashboardBtn />
-        <CertDbBtn />
-        {roles.includes("admin") && <UsersBtn />}
+        <Btn_Dashboard />
+        {roles.includes("client") && <Btn_CertDb />}
+        {roles.includes("admin" || "staff") && <Btn_ClientDB />}
+        {roles.includes("admin") && <Btn_Users />}
       </ul>
     </nav>
   );

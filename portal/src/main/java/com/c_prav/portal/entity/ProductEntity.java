@@ -19,4 +19,5 @@ public class ProductEntity {
     private String c_comments;
     private String c_product_manager;
     private String c_product_photos;
+    private String c_product_status;
 }

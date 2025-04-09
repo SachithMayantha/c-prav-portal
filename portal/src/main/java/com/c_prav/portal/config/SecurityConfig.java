@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import org.hibernate.tool.schema.internal.exec.ScriptTargetOutputToFile;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authorization.AuthorityAuthorizationManager;
+import org.springframework.security.authorization.AuthorizationManagers;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,12 +38,29 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/home/admin").authenticated()
-                        .requestMatchers("/home/staff").authenticated()
-                        .requestMatchers("/home/client").authenticated()
-                        .requestMatchers("/user/getUsers").authenticated()
-                        .requestMatchers("/home/**").authenticated()
+//                        .requestMatchers("/user/getUsers")
+//                        .access(AuthorizationManagers.allOf(
+//                                AuthorityAuthorizationManager.hasAuthority("SCOPE_c-prav"),
+//                                AuthorityAuthorizationManager.hasAuthority("ROLE_ADMIN")
+//                        ))
+                        .requestMatchers("/home/admin")
+                        .access(AuthorizationManagers.allOf(
+                                AuthorityAuthorizationManager.hasAuthority("SCOPE_c-prav"),
+                                AuthorityAuthorizationManager.hasAuthority("ROLE_ADMIN")
+                        ))
+                        .requestMatchers("/home/staff")
+                        .access(AuthorizationManagers.allOf(
+                                AuthorityAuthorizationManager.hasAuthority("SCOPE_c-prav"),
+                                AuthorityAuthorizationManager.hasAuthority("ROLE_STAFF")
+                        ))
+                        .requestMatchers("/home/client")
+                        .access(AuthorizationManagers.allOf(
+                                AuthorityAuthorizationManager.hasAuthority("SCOPE_c-prav"),
+                                AuthorityAuthorizationManager.hasAuthority("ROLE_CLIENT")
+                        ))
+                        .anyRequest().authenticated()
                 )
+
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(customJwtAuthenticationConverter()))
                 );

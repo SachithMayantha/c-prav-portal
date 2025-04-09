@@ -18,6 +18,7 @@ import CustomSecureRoute from "./pages/CustomSecureRoute";
 import "./App.css";
 import CertDB from "./pages/CertDB";
 import UserTable from "./components/UserTable";
+import CertDB_ProductInfo from "./components/CertDB_ProductInfo";
 
 const AppRoutes = () => {
   const navigate = useNavigate();
@@ -76,6 +77,14 @@ const AppRoutes = () => {
                       <CustomSecureRoute>
                         <UserTable />
                         <CustomSecureRoute />
+                      </CustomSecureRoute>
+                    }
+                  />
+                  <Route
+                    path="cert-db-product-info"
+                    element={
+                      <CustomSecureRoute>
+                        <CertDB_ProductInfo />
                       </CustomSecureRoute>
                     }
                   />

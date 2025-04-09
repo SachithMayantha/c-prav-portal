@@ -1,136 +1,302 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axiosInstance from "../api/AxiosConfig";
+import { Modal, Form } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { FaTrash, FaUpload } from "react-icons/fa";
+import Button from "@mui/material/Button";
+import { useUserRoles } from "../hooks/useUserRoles";
 
 const CertDB_Products = () => {
-    return (
-        <div class="row">
+  const roles = useUserRoles();
+  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [formData, setFormData] = useState({
+    productId: "",
+    companyName: "",
+    status: "Active",
+  });
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [filePreview, setFilePreview] = useState(null);
 
-            <div class="col-md-12 grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link active" id="profile-tab" data-bs-toggle="tab" href="#profile-1" role="tab" aria-controls="profile" aria-selected="false" tabindex="-1">Products</a>
-                            </li>
-                        </ul>
-                        <div class="tab-content">
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
-                            <div class="tab-pane fade active show" id="profile-1" role="tabpanel" aria-labelledby="profile-tab">
+  const fetchProducts = async () => {
+    try {
+      const response = await axiosInstance.get("/product/getProducts");
+      setProducts(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setLoading(false);
+    }
+  };
 
-                                <div className="card card_product_detail_certificates" style={{ border: '1px solid #dbdbd9' }}>
-                                    <div className="card-header" data-tour="true" data-step="1" data-intro="Here you can see a list of all certificates in this product. The number in brackets shows how many certificates there are.">
-                                        <i className="fa fa-lg fa-fw fa-file-certificate"></i> TAMSys Demo Company
-                                        <div id="date_export_expiring_certificates" style={{ float: 'right' }} className="hidden">
-                                            <form action="?pid=lP5Ssi4FekRMs4QVoOdHhKk8Cep6KZ0fB_KOkRAKywGw_83" method="post">
-                                                {/* Date input fields and export button are commented out */}
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <div className="card-body">
+  const handleClose = () => setShowModal(false);
+  const handleShow = () => setShowModal(true);
+  const handleDeleteClose = () => setShowDeleteModal(false);
 
+  const handleRowClick = (product) => {
+    navigate("/cert-db-product-info", {
+      state: {
+        productId: product.productId,
+        companyName: product.companyName,
+        comments: product.comments,
+        productManager: product.productManager,
+        status: product.status,
+      },
+    });
+  };
 
+  const handleDeleteClick = (product, e) => {
+    e.stopPropagation(); // Prevent row click event
+    setSelectedProduct(product);
+    setShowDeleteModal(true);
+  };
 
+  const handleDelete = async () => {
+    if (selectedProduct && selectedProduct.productId) {
+      try {
+        await axiosInstance.delete(`/product/${selectedProduct.productId}`);
+        handleDeleteClose();
+        fetchProducts(); // Refresh the list
+      } catch (error) {
+        console.error("Error deleting product:", error);
+      }
+    }
+  };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
 
+      // Create a preview URL for the image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFilePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
 
+      // Store the file name in the form data
+      setFormData((prevState) => ({
+        ...prevState,
+        photos: file.name,
+      }));
+    }
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axiosInstance.post("/product/save", {
+        companyName: formData.companyName,
+        status: formData.status,
+      });
 
-                                        <div id="nzhotPtH8jNKfiQyfDg_oDI9xa2LL4YhEIKNY7HULXKMaQ3" class="productcardbody"><span hidden="hidden" id="argument" data-page="/app/certificationmanagement/products" data-action="pid" data-value="kCZMkPxIe61LnRkCc4Jan_49NVv5JhuwNpVSYH5ilfaVss0"></span><div class="table-responsive"><table class="ibl-table-products table table-hover table-striped" id="prodTb0001">
-                                            <thead class="thead-light">
-                                                <tr>
-                                                    <th class="ibl-nosort" data-ibfilter-callback="prodUpdateCertsCount" data-tour="true" data-step="3" data-intro="Here you can see the product name, in brackets you can also see the number of products in the current view.<br>"><span class="ibl-headerCellText">Name (2 products)</span><i class="fas fa-filter ml-1 text-muted ibl-filterIcon ibl-openfilter"></i></th>
-                                                    <th class="ibl-nofilter ibl-nosort">&nbsp;</th>
-                                                    <th class="ibl-nofilter ibl-nosort">&nbsp;</th>
-                                                    <th class="ibl-nofilter ibl-nosort">&nbsp;</th>
-                                                    <th class="ibl-nofilter ibl-nosort" data-tour="true" data-step="4" data-intro="Here you can see the status of each product.
-Hovering over the status you will get more useful information<br>">Status</th>
-                                                    <th class="ibl-nofilter ibl-nosort" data-tour="true" data-step="5" data-intro="Here you can see the comments that are stored for these products. When hovering you can see what the comment contains.<br>">Comment</th>
-                                                    <th data-tour="true" data-step="6" data-intro="Here you can see the number of certificates that are in this product.<br>" class="text-right ibl-nofilter ibl-nosort">Certificates<br /><span class="cert_count"> (107)</span></th>
-                                                    <th data-tour="true" data-step="7" data-intro="Here you can see the number of files that are in this product.<br>" class="text-right ibl-nofilter ibl-nosort" title="" data-original-title="Exhibits + Testreports">Files</th></tr></thead>
-                                            <tbody>
-                                                <tr data-prodid="kCZMkPxIe61LnRkCc4Jan_49NVv5JhuwNpVSYH5ilfaVss0">
-                                                    <td class="ibl-product_link" data-pid="kCZMkPxIe61LnRkCc4Jan_49NVv5JhuwNpVSYH5ilfaVss0">
-                                                        <a href="product_detail_certificates.php?pid=kCZMkPxIe61LnRkCc4Jan_49NVv5JhuwNpVSYH5ilfaVss0">Demo Product A</a>
-                                                    </td>
-                                                    <td>
-                                                        <span title="" class="badge badge-warning" data-original-title="Product Compliance Score:<br></span>0/2 photos uploaded<br/>0/14 PID entries filled<br/>No product manager set<br/>Testreport uploaded<br/>22/22 mandatory exhibits uploaded<br/>28/30 relevant certificates OK">67.18%</span>
-                                                    </td>
-                                                    <td class="ibl-product_status ibl_td_prodcert_prot">
-                                                        <a href="/app/certificationmanagement/product_detail.php?pid=kCZMkPxIe61LnRkCc4Jan_49NVv5JhuwNpVSYH5ilfaVss0" data-original-title="" title=""></a>
-                                                    </td>
-                                                    <td class="ibl-product_status"></td>
-                                                    <td class="ibl-product_status ibl_td_prodcert_status">
-                                                        <span class="StatusIcon" title="" data-original-title="Product is not approved<br>Certification in Progress<br>4 of 33 Certificates NOT Approved; 5 Approval ending soon; 5 in Progress">
-                                                            <span class="fa fa-lg fa-fw fa-sync fa-spin" style={{color:'#e02846'}} data-original-title="" title=""></span>
-                                                            </span>
-                                                    </td>
-                                                    <td class="ibl-product_comment">
-                                                        <i title="" class="fa fa-comment ibl-color-inherit  fa-lg fa-fw" data-original-title="Demo Product automatically created for you by TAMSys"></i>
-                                                    </td>
-                                                    <td class="ibl-product_certificates ibl_td_cert_count text-right" title="" data-original-title="33 Certificates">33</td>
-                                                    <td class="ibl-product_exhibits text-right"><span title="" data-original-title="31 Exhibits">31</span>
-                                                    </td>
-                                                </tr>
+      handleClose();
+      // Reset form
+      setFormData({
+        productId: "",
+        companyName: "",
+        status: "Active",
+      });
+      setSelectedFile(null);
+      setFilePreview(null);
+      // Refresh products list
+      fetchProducts();
+    } catch (error) {
+      console.error("Error saving product:", error);
+    }
+  };
 
-                                                <tr data-prodid="kCZMkPxIe61LnRkCc4Jan_49NVv5JhuwNpVSYH5ilfaVss0">
-                                                    <td class="ibl-product_link" data-pid="kCZMkPxIe61LnRkCc4Jan_49NVv5JhuwNpVSYH5ilfaVss0">
-                                                        <a href="product_detail_certificates.php?pid=kCZMkPxIe61LnRkCc4Jan_49NVv5JhuwNpVSYH5ilfaVss0">Demo Product A</a>
-                                                    </td>
-                                                    <td>
-                                                        <span title="" class="badge badge-warning" data-original-title="Product Compliance Score:<br></span>0/2 photos uploaded<br/>0/14 PID entries filled<br/>No product manager set<br/>Testreport uploaded<br/>22/22 mandatory exhibits uploaded<br/>28/30 relevant certificates OK">67.18%</span>
-                                                    </td>
-                                                    <td class="ibl-product_status ibl_td_prodcert_prot">
-                                                        <a href="/app/certificationmanagement/product_detail.php?pid=kCZMkPxIe61LnRkCc4Jan_49NVv5JhuwNpVSYH5ilfaVss0" data-original-title="" title=""></a>
-                                                    </td>
-                                                    <td class="ibl-product_status"></td>
-                                                    <td class="ibl-product_status ibl_td_prodcert_status">
-                                                        <span class="StatusIcon" title="" data-original-title="Product is not approved<br>Certification in Progress<br>4 of 33 Certificates NOT Approved; 5 Approval ending soon; 5 in Progress">
-                                                            <span class="fa fa-lg fa-fw fa-sync fa-spin" style={{color:'#e02846'}} data-original-title="" title=""></span>
-                                                        </span>
-                                                    </td>
-                                                    <td class="ibl-product_comment">
-                                                        <i title="" class="fa fa-comment ibl-color-inherit  fa-lg fa-fw" data-original-title="Demo Product automatically created for you by TAMSys"></i>
-                                                    </td>
-                                                    <td class="ibl-product_certificates ibl_td_cert_count text-right" title="" data-original-title="33 Certificates">33</td>
-                                                    <td class="ibl-product_exhibits text-right"><span title="" data-original-title="31 Exhibits">31</span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                            <data class="ibl-prodIdList" data-table="prodTb0001" id="prodData0001" value="[[&quot;kCZMkPxIe61LnRkCc4Jan_49NVv5JhuwNpVSYH5ilfaVss0&quot;,&quot;kCZMkPxIe61LnRkCc4JanSI7PLwJ5_7f6mIGtbWbuXILlqc&quot;]]"></data>        <script class="iblXhrProdStatus">
-                                                loadProdStatusViaXHR("#prodData0001");
-                                            </script>
-                                        </div>
-                                        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
+  return (
+    <div className="row">
+      <div className="col-md-12 grid-margin stretch-card">
+        <div className="card">
+          <div className="card-body">
+            <div className="d-flex justify-content-between align-items-center">
+              <ul className="nav nav-tabs" role="tablist">
+                <li className="nav-item" role="presentation">
+                  <a
+                    className="nav-link active"
+                    id="profile-tab"
+                    data-bs-toggle="tab"
+                    href="#profile-1"
+                    role="tab"
+                    aria-controls="profile"
+                    aria-selected="false"
+                    tabIndex="-1"
+                  >
+                    Products
+                  </a>
+                </li>
+              </ul>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleShow}
+                startIcon={<span>+</span>}
+              >
+                Add Product
+              </Button>
             </div>
 
-        </div>);
+            {/* Add Product Modal */}
+            <Modal show={showModal} onHide={handleClose}>
+              <Modal.Header closeButton>
+                <Modal.Title>Add New Product</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form onSubmit={handleSubmit}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Product Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="companyName"
+                      value={formData.companyName}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Status</Form.Label>
+                    <Form.Select
+                      name="status"
+                      value={formData.status}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="Active">Active</option>
+                      <option value="Renew">Renew</option>
+                      <option value="Inactive">Inactive</option>
+                    </Form.Select>
+                  </Form.Group>
+                  <div className="d-flex justify-content-end gap-2">
+                    <Button variant="secondary" onClick={handleClose}>
+                      Cancel
+                    </Button>
+                    <Button variant="primary" type="submit">
+                      Save
+                    </Button>
+                  </div>
+                </Form>
+              </Modal.Body>
+            </Modal>
+
+            {/* Delete Confirmation Modal */}
+            <Modal show={showDeleteModal} onHide={handleDeleteClose}>
+              <Modal.Header closeButton>
+                <Modal.Title>Confirm Delete</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                Are you sure you want to delete this product?
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleDeleteClose}>
+                  Cancel
+                </Button>
+                <Button variant="danger" onClick={handleDelete}>
+                  Delete
+                </Button>
+              </Modal.Footer>
+            </Modal>
+
+            <div className="tab-content">
+              <div
+                className="tab-pane fade active show"
+                id="profile-1"
+                role="tabpanel"
+                aria-labelledby="profile-tab"
+              >
+                <div
+                  className="card card_product_detail_certificates"
+                  style={{ border: "1px solid #dbdbd9" }}
+                >
+                  <div
+                    className="card-header"
+                    data-tour="true"
+                    data-step="1"
+                    data-intro="Here you can see a list of all certificates in this product. The number in brackets shows how many certificates there are."
+                  >
+                    <i className="fa fa-lg fa-fw fa-file-certificate"></i>{" "}
+                    Products List
+                  </div>
+                  <div className="card-body">
+                    {loading ? (
+                      <div className="text-center">Loading...</div>
+                    ) : (
+                      <div className="table-responsive">
+                        <table className="table table-hover table-striped">
+                          <thead className="thead-light">
+                            <tr>
+                              <th>Product Name</th>
+                              <th>Status</th>
+                              {roles.includes("admin") && <th>Actions</th>}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {products.map((product, index) => (
+                              <tr
+                                key={index}
+                                onClick={() => handleRowClick(product)}
+                                style={{ cursor: "pointer" }}
+                              >
+                                <td>{product.companyName}</td>
+                                <td>
+                                  <span
+                                    className={`badge ${
+                                      product.status === "Active"
+                                        ? "bg-success"
+                                        : product.status === "Renew"
+                                        ? "bg-warning"
+                                        : "bg-danger"
+                                    }`}
+                                  >
+                                    {product.status}
+                                  </span>
+                                </td>
+                                <td>
+                                  {roles.includes("admin") && (
+                                    <Button
+                                      variant="link"
+                                      className="text-danger p-0"
+                                      onClick={(e) =>
+                                        handleDeleteClick(product, e)
+                                      }
+                                    >
+                                      <FaTrash />
+                                    </Button>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default CertDB_Products;

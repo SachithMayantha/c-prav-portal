@@ -1,4 +1,5 @@
 import axios from "axios";
+import { oktaAuth } from "../config/OktaAuth";
 
 const axiosInstance = axios.create({
   baseURL: "http://localhost:8080",
@@ -7,12 +8,15 @@ const axiosInstance = axios.create({
   },
 });
 
-export const setAuthToken = (token) => {
-  if (token) {
-    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  } else {
-    delete axiosInstance.defaults.headers.common["Authorization"];
+// Attach access token dynamically
+axiosInstance.interceptors.request.use(async (config) => {
+  const accessToken = await oktaAuth.getAccessToken();
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
   }
-};
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
 
 export default axiosInstance;

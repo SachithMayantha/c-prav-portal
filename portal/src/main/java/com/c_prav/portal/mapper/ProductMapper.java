@@ -13,7 +13,8 @@ public class ProductMapper {
                 productEntity.getC_company_name(),
                 productEntity.getC_comments(),
                 productEntity.getC_product_manager(),
-                productEntity.getC_product_photos()
+                productEntity.getC_product_photos(),
+                productEntity.getC_product_status()
         );
     }
 
@@ -24,6 +25,7 @@ public class ProductMapper {
         productEntity.setC_comments(productDto.getComments());
         productEntity.setC_product_manager(productDto.getProductManager());
         productEntity.setC_product_photos(productDto.getPhotos());
+        productEntity.setC_product_status(productDto.getStatus());
         return productEntity;
     }
 }
