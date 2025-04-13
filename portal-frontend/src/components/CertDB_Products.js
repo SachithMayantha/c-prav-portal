@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/AxiosConfig";
 import { Modal, Form } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaTrash, FaUpload } from "react-icons/fa";
 import Button from "@mui/material/Button";
 import { useUserRoles } from "../hooks/useUserRoles";
@@ -9,6 +9,8 @@ import { useUserRoles } from "../hooks/useUserRoles";
 const CertDB_Products = () => {
   const roles = useUserRoles();
   const navigate = useNavigate();
+  const location = useLocation();
+  const clientId = location.state?.clientId;
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [products, setProducts] = useState([]);
@@ -23,12 +25,18 @@ const CertDB_Products = () => {
   const [filePreview, setFilePreview] = useState(null);
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (clientId) {
+      fetchProducts();
+    } else {
+      navigate("/clients");
+    }
+  }, [clientId, navigate]);
 
   const fetchProducts = async () => {
     try {
-      const response = await axiosInstance.get("/product/getProducts");
+      const response = await axiosInstance.get(
+        `/product/getProducts/${clientId}`
+      );
       setProducts(response.data);
       setLoading(false);
     } catch (error) {
@@ -103,6 +111,7 @@ const CertDB_Products = () => {
     e.preventDefault();
     try {
       await axiosInstance.post("/product/save", {
+        clientId: clientId,
         companyName: formData.companyName,
         status: formData.status,
       });
@@ -156,40 +165,54 @@ const CertDB_Products = () => {
             </div>
 
             {/* Add Product Modal */}
-            <Modal show={showModal} onHide={handleClose}>
-              <Modal.Header closeButton>
-                <Modal.Title>Add New Product</Modal.Title>
+            <Modal show={showModal} onHide={handleClose} size="sm">
+              <Modal.Header closeButton className="py-2">
+                <Modal.Title className="fs-5">Add New Product</Modal.Title>
               </Modal.Header>
-              <Modal.Body>
+              <Modal.Body className="py-2">
                 <Form onSubmit={handleSubmit}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Product Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="companyName"
-                      value={formData.companyName}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Status</Form.Label>
-                    <Form.Select
-                      name="status"
-                      value={formData.status}
-                      onChange={handleInputChange}
-                      required
+                  <div className="row g-2">
+                    <div className="col-12">
+                      <Form.Group>
+                        <Form.Label className="small mb-1">
+                          Product Name
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="companyName"
+                          value={formData.companyName}
+                          onChange={handleInputChange}
+                          required
+                          size="sm"
+                        />
+                      </Form.Group>
+                    </div>
+                    <div className="col-12">
+                      <Form.Group>
+                        <Form.Label className="small mb-1">Status</Form.Label>
+                        <Form.Select
+                          name="status"
+                          value={formData.status}
+                          onChange={handleInputChange}
+                          required
+                          size="sm"
+                        >
+                          <option value="Active">Active</option>
+                          <option value="Renew">Renew</option>
+                          <option value="Inactive">Inactive</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </div>
+                  </div>
+                  <div className="d-flex justify-content-end gap-2 mt-3">
+                    <Button
+                      variant="secondary"
+                      onClick={handleClose}
+                      size="small"
                     >
-                      <option value="Active">Active</option>
-                      <option value="Renew">Renew</option>
-                      <option value="Inactive">Inactive</option>
-                    </Form.Select>
-                  </Form.Group>
-                  <div className="d-flex justify-content-end gap-2">
-                    <Button variant="secondary" onClick={handleClose}>
                       Cancel
                     </Button>
-                    <Button variant="primary" type="submit">
+                    <Button variant="primary" type="submit" size="small">
                       Save
                     </Button>
                   </div>
@@ -198,18 +221,22 @@ const CertDB_Products = () => {
             </Modal>
 
             {/* Delete Confirmation Modal */}
-            <Modal show={showDeleteModal} onHide={handleDeleteClose}>
-              <Modal.Header closeButton>
-                <Modal.Title>Confirm Delete</Modal.Title>
+            <Modal show={showDeleteModal} onHide={handleDeleteClose} size="sm">
+              <Modal.Header closeButton className="py-2">
+                <Modal.Title className="fs-5">Confirm Delete</Modal.Title>
               </Modal.Header>
-              <Modal.Body>
+              <Modal.Body className="py-2">
                 Are you sure you want to delete this product?
               </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleDeleteClose}>
+              <Modal.Footer className="py-2">
+                <Button
+                  variant="secondary"
+                  onClick={handleDeleteClose}
+                  size="small"
+                >
                   Cancel
                 </Button>
-                <Button variant="danger" onClick={handleDelete}>
+                <Button variant="danger" onClick={handleDelete} size="small">
                   Delete
                 </Button>
               </Modal.Footer>
@@ -226,12 +253,7 @@ const CertDB_Products = () => {
                   className="card card_product_detail_certificates"
                   style={{ border: "1px solid #dbdbd9" }}
                 >
-                  <div
-                    className="card-header"
-                    data-tour="true"
-                    data-step="1"
-                    data-intro="Here you can see a list of all certificates in this product. The number in brackets shows how many certificates there are."
-                  >
+                  <div className="card-header">
                     <i className="fa fa-lg fa-fw fa-file-certificate"></i>{" "}
                     Products List
                   </div>
@@ -249,9 +271,9 @@ const CertDB_Products = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {products.map((product, index) => (
+                            {products.map((product) => (
                               <tr
-                                key={index}
+                                key={product.productId}
                                 onClick={() => handleRowClick(product)}
                                 style={{ cursor: "pointer" }}
                               >
@@ -269,8 +291,8 @@ const CertDB_Products = () => {
                                     {product.status}
                                   </span>
                                 </td>
-                                <td>
-                                  {roles.includes("admin") && (
+                                {roles.includes("admin") && (
+                                  <td>
                                     <Button
                                       variant="link"
                                       className="text-danger p-0"
@@ -280,8 +302,8 @@ const CertDB_Products = () => {
                                     >
                                       <FaTrash />
                                     </Button>
-                                  )}
-                                </td>
+                                  </td>
+                                )}
                               </tr>
                             ))}
                           </tbody>

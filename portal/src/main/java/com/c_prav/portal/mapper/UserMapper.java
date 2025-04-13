@@ -8,16 +8,18 @@ public class UserMapper {
     public static UserDto mapUserToUserDto(UserEntity userEntity) {
         return new UserDto(
                 userEntity.getN_user_id(),
-                userEntity.getC_user_name(),
+                userEntity.getC_first_name(),
+                userEntity.getC_last_name(),
                 userEntity.getC_user_email(),
                 userEntity.getC_user_password(),
-                userEntity.getRoles()
+                userEntity.getC_role()
         );
     }
     public static UserEntity mapUserDtoToUserEntity(UserDto userDto) {
         return new UserEntity(
                 userDto.getUserId(),
-                userDto.getName(),
+                userDto.getFirstName(),
+                userDto.getLastName(),
                 userDto.getEmail(),
                 userDto.getPassword(),
                 userDto.getRoles()

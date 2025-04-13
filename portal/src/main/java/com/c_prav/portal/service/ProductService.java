@@ -16,4 +16,6 @@ public interface ProductService {
     String deleteProduct(Integer id);
 
     ProductDto updateProduct(ProductDto productDto);
+
+    List<ProductDto> getAllProductsByClientId(Integer id);
 }
