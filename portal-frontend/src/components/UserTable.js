@@ -248,7 +248,7 @@ const UserTable = () => {
                 <TableCell>{user.userId}</TableCell>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.role || "N/A"}</TableCell>
+                <TableCell>{user.roles || "N/A"}</TableCell>
                 <TableCell>
                   <Tooltip title="Delete User">
                     <IconButton

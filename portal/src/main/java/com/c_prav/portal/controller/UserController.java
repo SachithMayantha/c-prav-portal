@@ -1,6 +1,7 @@
 package com.c_prav.portal.controller;
 
 import com.c_prav.portal.dto.UserDto;
+import com.c_prav.portal.service.OktaService;
 import com.c_prav.portal.service.impl.UserServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,17 @@ public class UserController {
 
     private UserServiceImpl userService;
 
+    private OktaService oktaService;
+
     @PostMapping("save")
     public ResponseEntity<String> saveUser(@RequestBody UserDto userDto) {
-        String msg = userService.saveUser(userDto);
-        return new ResponseEntity<>(msg, HttpStatus.CREATED);
+        try {
+            String msg = userService.saveUser(userDto);
+            oktaService.createOktaUser(userDto.getFirstName(), userDto.getLastName(), userDto.getEmail(), userDto.getPassword(), userDto.getRoles());
+            return new ResponseEntity<>(msg, HttpStatus.CREATED);
+        }catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("{userId}")

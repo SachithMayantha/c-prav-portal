@@ -43,4 +43,9 @@ public class ProductController {
     public ResponseEntity<ProductDto> updateProduct(@RequestBody ProductDto productDto) {
         return new ResponseEntity<>(productService.updateProduct(productDto), HttpStatus.OK);
     }
+
+    @GetMapping("getProducts/{clientId}")
+    public ResponseEntity<List<ProductDto>> getProductsByClientId(@PathVariable("clientId") Integer clientId) {
+       return new ResponseEntity<>(productService.getAllProductsByClientId(clientId), HttpStatus.OK);
+    }
 }

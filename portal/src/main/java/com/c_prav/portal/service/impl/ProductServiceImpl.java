@@ -54,4 +54,10 @@ public class ProductServiceImpl implements ProductService {
         ProductEntity productEntity = productRepository.save(ProductMapper.mapToProductEntity(productDto));
         return ProductMapper.mapToProductDto(productEntity);
     }
+
+    @Override
+    public List<ProductDto> getAllProductsByClientId(Integer clientId) {
+        List<ProductEntity> entities = productRepository.findProductsByClientId(clientId);
+        return entities.stream().map(ProductMapper::mapToProductDto).collect(Collectors.toList());
+    }
 }

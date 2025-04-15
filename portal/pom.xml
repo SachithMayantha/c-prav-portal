@@ -79,15 +79,30 @@
 		<dependency>
 			<groupId>com.okta.sdk</groupId>
 			<artifactId>okta-sdk-api</artifactId>
-			<version>11.0.0</version> <!-- Use latest stable -->
+			<version>8.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.okta.sdk</groupId>
+			<artifactId>okta-sdk-httpclient</artifactId>
+			<version>8.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.okta.sdk</groupId>
 			<artifactId>okta-sdk-impl</artifactId>
-			<version>11.0.0</version>
+			<version>8.0.0</version>
 		</dependency>
 
+
 	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>central</id>
+			<name>Maven Central Repository</name>
+			<url>https://repo.maven.apache.org/maven2/</url>
+		</repository>
+	</repositories>
+
 
 	<build>
 		<plugins>

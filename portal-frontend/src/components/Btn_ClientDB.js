@@ -6,7 +6,7 @@ export class ClientDbBtn extends Component {
     return (
       <div>
         <li className="nav-item">
-          <Link className="nav-link" to="/cert-db">
+          <Link className="nav-link" to="/client-db">
             <span className="menu-title">Client-DB</span>
             <i className="icon-layers menu-icon"></i>
           </Link>
