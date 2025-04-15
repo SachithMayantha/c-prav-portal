@@ -70,7 +70,9 @@ const CertDB_Products = () => {
   const handleDelete = async () => {
     if (selectedProduct && selectedProduct.productId) {
       try {
-        await axiosInstance.delete(`/product/${selectedProduct.productId}`);
+        await axiosInstance.delete(
+          `/product/${selectedProduct.productId}`
+        );
         handleDeleteClose();
         fetchProducts(); // Refresh the list
       } catch (error) {
@@ -110,8 +112,7 @@ const CertDB_Products = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axiosInstance.post("/product/save", {
-        clientId: clientId,
+      await axiosInstance.post(`/product/save/${clientId}`, {
         companyName: formData.companyName,
         status: formData.status,
       });

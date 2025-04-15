@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ProductService {
 
-    String saveProduct(ProductDto productDto);
+    String saveProduct(ProductDto productDto, String clientId);
 
     ProductDto getProductById(Integer id);
 

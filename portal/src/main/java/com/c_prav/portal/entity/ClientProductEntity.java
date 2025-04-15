@@ -17,4 +17,9 @@ public class ClientProductEntity {
     private int n_client_product;
     private int n_client_id;
     private int n_product_id;
+
+    public ClientProductEntity(int clientId, int nProductId) {
+        this.n_client_id = clientId;
+        this.n_product_id = nProductId;
+    }
 }

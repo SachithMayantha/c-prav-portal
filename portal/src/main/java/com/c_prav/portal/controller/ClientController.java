@@ -19,8 +19,12 @@ public class ClientController {
 
     @PostMapping("save")
     public ResponseEntity<String> saveClient(@RequestBody ClientDto clientDto) {
-        String msg = clientService.saveClient(clientDto);
-        return new ResponseEntity<>(msg, HttpStatus.CREATED);
+        try {
+            String msg = clientService.saveClient(clientDto);
+            return new ResponseEntity<>(msg, HttpStatus.CREATED);
+        }catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("{clientId}")
