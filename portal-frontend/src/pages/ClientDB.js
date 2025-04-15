@@ -20,7 +20,10 @@ const ClientDB = () => {
     mobile: "",
     email: "",
     address: "",
+    password: "",
+    roles: "staff",
   });
+  const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
     fetchClients();
@@ -37,7 +40,20 @@ const ClientDB = () => {
     }
   };
 
-  const handleClose = () => setShowModal(false);
+  const handleClose = () => {
+    setShowModal(false);
+    setFormData({
+      company: "",
+      contactPerson: "",
+      mobile: "",
+      email: "",
+      address: "",
+      password: "",
+      roles: "staff",
+    });
+    setFormErrors({});
+  };
+
   const handleShow = () => setShowModal(true);
   const handleDeleteClose = () => setShowDeleteModal(false);
 
@@ -71,9 +87,54 @@ const ClientDB = () => {
     }));
   };
 
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.company.trim()) {
+      errors.company = "Company name is required";
+    }
+    if (!formData.contactPerson.trim()) {
+      errors.contactPerson = "Contact person is required";
+    }
+    if (!formData.mobile.trim()) {
+      errors.mobile = "Mobile number is required";
+    }
+    if (!formData.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Email is invalid";
+    }
+    if (!formData.password) {
+      errors.password = "Password is required";
+    } else {
+      // Password validation
+      const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{12,}$/;
+      if (!passwordRegex.test(formData.password)) {
+        errors.password =
+          "Password must be at least 12 characters long and include uppercase, lowercase, number, and symbol";
+      }
+      // Check if password is same as email
+      if (formData.password.toLowerCase() === formData.email.toLowerCase()) {
+        errors.password = "Password cannot be the same as email";
+      }
+    }
+    if (!formData.address.trim()) {
+      errors.address = "Address is required";
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     try {
+      // Keep using the client save endpoint with the existing structure
       await axiosInstance.post("/client/save", formData);
       handleClose();
       // Reset form
@@ -83,6 +144,8 @@ const ClientDB = () => {
         mobile: "",
         email: "",
         address: "",
+        password: "",
+        roles: "staff",
       });
       // Refresh clients list
       fetchClients();
@@ -186,7 +249,28 @@ const ClientDB = () => {
                           onChange={handleInputChange}
                           required
                           size="sm"
+                          isInvalid={!!formErrors.email}
                         />
+                        <Form.Control.Feedback type="invalid">
+                          {formErrors.email}
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                    </div>
+                    <div className="col-12">
+                      <Form.Group>
+                        <Form.Label className="small mb-1">Password</Form.Label>
+                        <Form.Control
+                          type="password"
+                          name="password"
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          required
+                          size="sm"
+                          isInvalid={!!formErrors.password}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {formErrors.password}
+                        </Form.Control.Feedback>
                       </Form.Group>
                     </div>
                     <div className="col-12">
@@ -200,7 +284,11 @@ const ClientDB = () => {
                           onChange={handleInputChange}
                           required
                           size="sm"
+                          isInvalid={!!formErrors.address}
                         />
+                        <Form.Control.Feedback type="invalid">
+                          {formErrors.address}
+                        </Form.Control.Feedback>
                       </Form.Group>
                     </div>
                   </div>

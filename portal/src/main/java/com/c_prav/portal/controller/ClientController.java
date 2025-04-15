@@ -3,6 +3,7 @@ package com.c_prav.portal.controller;
 import com.c_prav.portal.dto.ClientDto;
 import com.c_prav.portal.dto.UserDto;
 import com.c_prav.portal.service.ClientService;
+import com.c_prav.portal.service.OktaService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +17,13 @@ import java.util.List;
 @CrossOrigin
 public class ClientController {
     private ClientService clientService;
+    private OktaService oktaService;
 
     @PostMapping("save")
     public ResponseEntity<String> saveClient(@RequestBody ClientDto clientDto) {
         try {
             String msg = clientService.saveClient(clientDto);
+            oktaService.createOktaUser(clientDto.getCompany(),clientDto.getContactPerson(),clientDto.getEmail(),clientDto.getPassword(),"client");
             return new ResponseEntity<>(msg, HttpStatus.CREATED);
         }catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
