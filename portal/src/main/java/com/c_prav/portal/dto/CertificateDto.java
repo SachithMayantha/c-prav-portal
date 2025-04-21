@@ -1,19 +1,14 @@
-package com.c_prav.portal.entity;
+package com.c_prav.portal.dto;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "certificates")
-public class CertificateEntity {
+public class CertificateDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int n_certificate_id;
     private int n_product_id;
     private int n_country_id;

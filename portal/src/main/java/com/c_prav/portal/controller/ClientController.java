@@ -4,6 +4,7 @@ import com.c_prav.portal.dto.ClientDto;
 import com.c_prav.portal.dto.UserDto;
 import com.c_prav.portal.service.ClientService;
 import com.c_prav.portal.service.OktaService;
+import com.c_prav.portal.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +19,13 @@ import java.util.List;
 public class ClientController {
     private ClientService clientService;
     private OktaService oktaService;
+    private UserService userService;
 
     @PostMapping("save")
     public ResponseEntity<String> saveClient(@RequestBody ClientDto clientDto) {
         try {
             String msg = clientService.saveClient(clientDto);
+            userService.saveUser(new UserDto(clientDto.getCompany(),clientDto.getContactPerson(),clientDto.getEmail(),clientDto.getPassword(),"client"));
             oktaService.createOktaUser(clientDto.getCompany(),clientDto.getContactPerson(),clientDto.getEmail(),clientDto.getPassword(),"client");
             return new ResponseEntity<>(msg, HttpStatus.CREATED);
         }catch (Exception e) {

@@ -11,6 +11,7 @@ const ClientDB = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCountryModal, setShowCountryModal] = useState(false);
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState(null);
@@ -22,6 +23,11 @@ const ClientDB = () => {
     address: "",
     password: "",
     roles: "staff",
+  });
+  const [countryFormData, setCountryFormData] = useState({
+    countryName: "",
+    countryCode: "",
+    status: "active",
   });
   const [formErrors, setFormErrors] = useState({});
 
@@ -56,6 +62,37 @@ const ClientDB = () => {
 
   const handleShow = () => setShowModal(true);
   const handleDeleteClose = () => setShowDeleteModal(false);
+
+  const handleCountryClose = () => {
+    setShowCountryModal(false);
+    setCountryFormData({
+      countryName: "",
+      countryCode: "",
+      status: "active",
+    });
+  };
+
+  const handleCountryShow = () => setShowCountryModal(true);
+
+  const handleCountryInputChange = (e) => {
+    const { name, value } = e.target;
+    setCountryFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleCountrySubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axiosInstance.post("/country/save", countryFormData);
+      handleCountryClose();
+      // Refresh the list if needed
+      fetchClients();
+    } catch (error) {
+      console.error("Error saving country:", error);
+    }
+  };
 
   const handleRowClick = (client) => {
     navigate("/products", { state: { clientId: client.clientId } });
@@ -176,14 +213,24 @@ const ClientDB = () => {
                   </a>
                 </li>
               </ul>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleShow}
-                startIcon={<span>+</span>}
-              >
-                Add Client
-              </Button>
+              <div className="d-flex gap-2">
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleCountryShow}
+                  startIcon={<span>+</span>}
+                >
+                  Add Country
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleShow}
+                  startIcon={<span>+</span>}
+                >
+                  Add Client
+                </Button>
+              </div>
             </div>
 
             {/* Add Client Modal */}
@@ -324,6 +371,81 @@ const ClientDB = () => {
                   Delete
                 </Button>
               </Modal.Footer>
+            </Modal>
+
+            {/* Add Country Modal */}
+            <Modal
+              show={showCountryModal}
+              onHide={handleCountryClose}
+              size="sm"
+            >
+              <Modal.Header closeButton className="py-2">
+                <Modal.Title className="fs-5">Add New Country</Modal.Title>
+              </Modal.Header>
+              <Modal.Body className="py-2">
+                <Form onSubmit={handleCountrySubmit}>
+                  <div className="row g-2">
+                    <div className="col-12">
+                      <Form.Group>
+                        <Form.Label className="small mb-1">
+                          Country Name
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="countryName"
+                          value={countryFormData.countryName}
+                          onChange={handleCountryInputChange}
+                          required
+                          size="sm"
+                        />
+                      </Form.Group>
+                    </div>
+                    <div className="col-12">
+                      <Form.Group>
+                        <Form.Label className="small mb-1">
+                          Country Code
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="countryCode"
+                          value={countryFormData.countryCode}
+                          onChange={handleCountryInputChange}
+                          required
+                          size="sm"
+                          maxLength={2}
+                          placeholder="e.g., US, GB, DE"
+                        />
+                      </Form.Group>
+                    </div>
+                    <div className="col-12">
+                      <Form.Group>
+                        <Form.Label className="small mb-1">Status</Form.Label>
+                        <Form.Select
+                          name="status"
+                          value={countryFormData.status}
+                          onChange={handleCountryInputChange}
+                          size="sm"
+                        >
+                          <option value="active">Active</option>
+                          <option value="inactive">Inactive</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </div>
+                  </div>
+                  <div className="d-flex justify-content-end gap-2 mt-3">
+                    <Button
+                      variant="secondary"
+                      onClick={handleCountryClose}
+                      size="small"
+                    >
+                      Cancel
+                    </Button>
+                    <Button variant="primary" type="submit" size="small">
+                      Save
+                    </Button>
+                  </div>
+                </Form>
+              </Modal.Body>
             </Modal>
 
             <div className="tab-content">
