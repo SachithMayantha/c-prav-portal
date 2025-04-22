@@ -66,10 +66,10 @@ public class OktaService {
      * Assign user to the correct Okta group based on role
      */
     private void assignUserToGroup(String userId, String role) {
+//        System.out.println("Assigning user to group " + role);
         String groupId = getGroupIdFromRole(role);
 
-        String url = oktaApiUrl + "/api/v1/groups/" + groupId + "/users/" + userId
-                + "/credentials/forgot_password?sendEmail=true";
+        String url = oktaApiUrl + "/api/v1/groups/" + groupId + "/users/" + userId;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -79,12 +79,12 @@ public class OktaService {
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         RestTemplate restTemplate = new RestTemplate();
-        System.out.println("URL: " + url);
-        System.out.println("Headers: " + headers);
-        System.out.println("Entity: " + entity.getBody());
+//        System.out.println("URL: " + url);
+//        System.out.println("Headers: " + headers);
+//        System.out.println("Entity: " + entity.getBody());
         restTemplate.put(url, entity);
 
-        System.out.println("User assigned to group: " + role);
+//        System.out.println("User assigned to group: " + role);
     }
 
     /**
