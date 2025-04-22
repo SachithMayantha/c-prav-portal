@@ -9,7 +9,6 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class TestReportDto {
 
     private int n_test_rep_id;

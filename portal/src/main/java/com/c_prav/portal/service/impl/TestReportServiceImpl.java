@@ -24,4 +24,5 @@ public class TestReportServiceImpl implements TestReportService {
         List<TestReportEntity> testReportEntities = testReportRepository.findAll();
         return testReportEntities.stream().map(TestReportMapper::mapTestReportToTestReportDto).collect(Collectors.toList());
     }
+
 }

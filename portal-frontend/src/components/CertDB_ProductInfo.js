@@ -866,7 +866,8 @@ const CertDB_ProductInfo = () => {
                   <div className="card-body">
                     <div className="table-responsive">
 
-                      <div style={{ textAlign: 'right' }}>
+                      <div tyle={{ textAlign: 'right' }}>
+
                         <Button
                           variant="contained"
                           color="primary"
@@ -897,7 +898,13 @@ const CertDB_ProductInfo = () => {
                               <input type="checkbox" />
                             </td>
                             <td>
-                              <a href="" onClick={handleViewPDF} target="_blank" rel="noopener noreferrer" >
+
+                              <a
+                                href="/download.php?fid=tzJ3dA4HqCxtimsLk4Mx9KoR0gFu5Wm13ApeL1KztjA"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+
                                 Test_Report_EMC_36174286380.pdf
                               </a>
                             </td>
@@ -912,13 +919,26 @@ const CertDB_ProductInfo = () => {
                               <input type="checkbox" />
                             </td>
                             <td className="text-right buttons">
-                              <a className="btn btn-sm btn-outline-gray-500 mr-1" title="Edit Testreport">
+                              <a
+                                className="btn btn-sm btn-outline-gray-500 mr-1"
+                                href="/product_detail_exhibits_edit.php?pid=1938&id=tzJ3dA4HqCxtimsLk4Mx9KoR0gFu5Wm13ApeL1KztjA"
+                                title="Edit Testreport"
+                              >
                                 <i className="fa fa-fw fa-edit"></i>
                               </a>
-                              <a className="btn btn-sm btn-outline-gray-500 mr-1" title="Archive Testreport">
+                              <a
+                                className="btn btn-sm btn-outline-gray-500 mr-1"
+                                href="#"
+                                title="Archive Testreport"
+                              >
                                 <i className="fa fa-fw fa-archive"></i>
                               </a>
-                              <a className="btn btn-sm btn-outline-gray-500 mr-1" title="Delete Exhibit">
+                              <a
+                                className="btn btn-sm btn-outline-gray-500 mr-1"
+                                href="#"
+                                title="Delete Exhibit"
+                              >
+
                                 <i className="fa fa-fw fa-trash ibl-color-negative"></i>
                               </a>
                             </td>

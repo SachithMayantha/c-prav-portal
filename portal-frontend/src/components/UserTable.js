@@ -31,9 +31,11 @@ const UserTable = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
-    role: "client", // Default role
+    password: "",
+    roles: "staff", // Default role
   });
   const [formErrors, setFormErrors] = useState({});
   const [submitStatus, setSubmitStatus] = useState({
@@ -67,9 +69,11 @@ const UserTable = () => {
   const handleClose = () => {
     setOpen(false);
     setFormData({
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
-      role: "client",
+      password: "",
+      roles: "staff",
     });
     setFormErrors({});
   };
@@ -130,16 +134,34 @@ const UserTable = () => {
 
   const validateForm = () => {
     const errors = {};
-    if (!formData.name.trim()) {
-      errors.name = "Name is required";
+    if (!formData.firstName.trim()) {
+      errors.firstName = "First name is required";
+    }
+    if (!formData.lastName.trim()) {
+      errors.lastName = "Last name is required";
     }
     if (!formData.email.trim()) {
       errors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       errors.email = "Email is invalid";
     }
-    if (!formData.role) {
-      errors.role = "Role is required";
+    if (!formData.password) {
+      errors.password = "Password is required";
+    } else {
+      // Password validation
+      const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{12,}$/;
+      if (!passwordRegex.test(formData.password)) {
+        errors.password =
+          "Password must be at least 12 characters long and include uppercase, lowercase, number, and symbol";
+      }
+      // Check if password is same as email
+      if (formData.password.toLowerCase() === formData.email.toLowerCase()) {
+        errors.password = "Password cannot be the same as email";
+      }
+    }
+    if (!formData.roles) {
+      errors.roles = "Role is required";
     }
 
     setFormErrors(errors);
@@ -283,16 +305,31 @@ const UserTable = () => {
             <TextField
               autoFocus
               margin="dense"
-              id="name"
-              name="name"
-              label="Full Name"
+              id="firstName"
+              name="firstName"
+              label="First Name"
               type="text"
               fullWidth
               variant="outlined"
-              value={formData.name}
+              value={formData.firstName}
               onChange={handleInputChange}
-              error={!!formErrors.name}
-              helperText={formErrors.name}
+              error={!!formErrors.firstName}
+              helperText={formErrors.firstName}
+              sx={{ mb: 2 }}
+            />
+
+            <TextField
+              margin="dense"
+              id="lastName"
+              name="lastName"
+              label="Last Name"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              error={!!formErrors.lastName}
+              helperText={formErrors.lastName}
               sx={{ mb: 2 }}
             />
 
@@ -313,20 +350,34 @@ const UserTable = () => {
 
             <TextField
               margin="dense"
-              id="role"
-              name="role"
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              fullWidth
+              variant="outlined"
+              value={formData.password}
+              onChange={handleInputChange}
+              error={!!formErrors.password}
+              helperText={formErrors.password}
+              sx={{ mb: 2 }}
+            />
+
+            <TextField
+              margin="dense"
+              id="roles"
+              name="roles"
               label="User Role"
               select
               fullWidth
               variant="outlined"
-              value={formData.role}
+              value={formData.roles}
               onChange={handleInputChange}
-              error={!!formErrors.role}
-              helperText={formErrors.role}
+              error={!!formErrors.roles}
+              helperText={formErrors.roles}
             >
               <MenuItem value="admin">Admin</MenuItem>
               <MenuItem value="staff">Staff</MenuItem>
-              <MenuItem value="client">Client</MenuItem>
             </TextField>
           </DialogContent>
           <DialogActions>

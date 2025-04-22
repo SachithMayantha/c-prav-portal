@@ -11,6 +11,9 @@ const ClientDB = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const [showCountryModal, setShowCountryModal] = useState(false);
+
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState(null);
@@ -20,7 +23,17 @@ const ClientDB = () => {
     mobile: "",
     email: "",
     address: "",
+
+    password: "",
+    roles: "staff",
   });
+  const [countryFormData, setCountryFormData] = useState({
+    countryName: "",
+    countryCode: "",
+    status: "active",
+  });
+  const [formErrors, setFormErrors] = useState({});
+
 
   useEffect(() => {
     fetchClients();
@@ -37,9 +50,54 @@ const ClientDB = () => {
     }
   };
 
-  const handleClose = () => setShowModal(false);
+
+  const handleClose = () => {
+    setShowModal(false);
+    setFormData({
+      company: "",
+      contactPerson: "",
+      mobile: "",
+      email: "",
+      address: "",
+      password: "",
+      roles: "staff",
+    });
+    setFormErrors({});
+  };
+
   const handleShow = () => setShowModal(true);
   const handleDeleteClose = () => setShowDeleteModal(false);
+
+  const handleCountryClose = () => {
+    setShowCountryModal(false);
+    setCountryFormData({
+      countryName: "",
+      countryCode: "",
+      status: "active",
+    });
+  };
+
+  const handleCountryShow = () => setShowCountryModal(true);
+
+  const handleCountryInputChange = (e) => {
+    const { name, value } = e.target;
+    setCountryFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleCountrySubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axiosInstance.post("/country/save", countryFormData);
+      handleCountryClose();
+      // Refresh the list if needed
+      fetchClients();
+    } catch (error) {
+      console.error("Error saving country:", error);
+    }
+  };
 
   const handleRowClick = (client) => {
     navigate("/products", { state: { clientId: client.clientId } });
@@ -71,9 +129,55 @@ const ClientDB = () => {
     }));
   };
 
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.company.trim()) {
+      errors.company = "Company name is required";
+    }
+    if (!formData.contactPerson.trim()) {
+      errors.contactPerson = "Contact person is required";
+    }
+    if (!formData.mobile.trim()) {
+      errors.mobile = "Mobile number is required";
+    }
+    if (!formData.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Email is invalid";
+    }
+    if (!formData.password) {
+      errors.password = "Password is required";
+    } else {
+      // Password validation
+      const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{12,}$/;
+      if (!passwordRegex.test(formData.password)) {
+        errors.password =
+          "Password must be at least 12 characters long and include uppercase, lowercase, number, and symbol";
+      }
+      // Check if password is same as email
+      if (formData.password.toLowerCase() === formData.email.toLowerCase()) {
+        errors.password = "Password cannot be the same as email";
+      }
+    }
+    if (!formData.address.trim()) {
+      errors.address = "Address is required";
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     try {
+      // Keep using the client save endpoint with the existing structure
+
       await axiosInstance.post("/client/save", formData);
       handleClose();
       // Reset form
@@ -83,6 +187,10 @@ const ClientDB = () => {
         mobile: "",
         email: "",
         address: "",
+
+        password: "",
+        roles: "staff",
+
       });
       // Refresh clients list
       fetchClients();
@@ -113,14 +221,25 @@ const ClientDB = () => {
                   </a>
                 </li>
               </ul>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleShow}
-                startIcon={<span>+</span>}
-              >
-                Add Client
-              </Button>
+              <div className="d-flex gap-2">
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleCountryShow}
+                  startIcon={<span>+</span>}
+                >
+                  Add Country
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleShow}
+                  startIcon={<span>+</span>}
+                >
+                  Add Client
+                </Button>
+              </div>
+
             </div>
 
             {/* Add Client Modal */}
@@ -186,7 +305,30 @@ const ClientDB = () => {
                           onChange={handleInputChange}
                           required
                           size="sm"
+
+                          isInvalid={!!formErrors.email}
                         />
+                        <Form.Control.Feedback type="invalid">
+                          {formErrors.email}
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                    </div>
+                    <div className="col-12">
+                      <Form.Group>
+                        <Form.Label className="small mb-1">Password</Form.Label>
+                        <Form.Control
+                          type="password"
+                          name="password"
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          required
+                          size="sm"
+                          isInvalid={!!formErrors.password}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {formErrors.password}
+                        </Form.Control.Feedback>
+
                       </Form.Group>
                     </div>
                     <div className="col-12">
@@ -200,7 +342,13 @@ const ClientDB = () => {
                           onChange={handleInputChange}
                           required
                           size="sm"
+
+                          isInvalid={!!formErrors.address}
                         />
+                        <Form.Control.Feedback type="invalid">
+                          {formErrors.address}
+                        </Form.Control.Feedback>
+
                       </Form.Group>
                     </div>
                   </div>
@@ -236,6 +384,81 @@ const ClientDB = () => {
                   Delete
                 </Button>
               </Modal.Footer>
+            </Modal>
+
+            {/* Add Country Modal */}
+            <Modal
+              show={showCountryModal}
+              onHide={handleCountryClose}
+              size="sm"
+            >
+              <Modal.Header closeButton className="py-2">
+                <Modal.Title className="fs-5">Add New Country</Modal.Title>
+              </Modal.Header>
+              <Modal.Body className="py-2">
+                <Form onSubmit={handleCountrySubmit}>
+                  <div className="row g-2">
+                    <div className="col-12">
+                      <Form.Group>
+                        <Form.Label className="small mb-1">
+                          Country Name
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="countryName"
+                          value={countryFormData.countryName}
+                          onChange={handleCountryInputChange}
+                          required
+                          size="sm"
+                        />
+                      </Form.Group>
+                    </div>
+                    <div className="col-12">
+                      <Form.Group>
+                        <Form.Label className="small mb-1">
+                          Country Code
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="countryCode"
+                          value={countryFormData.countryCode}
+                          onChange={handleCountryInputChange}
+                          required
+                          size="sm"
+                          maxLength={2}
+                          placeholder="e.g., US, GB, DE"
+                        />
+                      </Form.Group>
+                    </div>
+                    <div className="col-12">
+                      <Form.Group>
+                        <Form.Label className="small mb-1">Status</Form.Label>
+                        <Form.Select
+                          name="status"
+                          value={countryFormData.status}
+                          onChange={handleCountryInputChange}
+                          size="sm"
+                        >
+                          <option value="active">Active</option>
+                          <option value="inactive">Inactive</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </div>
+                  </div>
+                  <div className="d-flex justify-content-end gap-2 mt-3">
+                    <Button
+                      variant="secondary"
+                      onClick={handleCountryClose}
+                      size="small"
+                    >
+                      Cancel
+                    </Button>
+                    <Button variant="primary" type="submit" size="small">
+                      Save
+                    </Button>
+                  </div>
+                </Form>
+              </Modal.Body>
             </Modal>
 
             <div className="tab-content">

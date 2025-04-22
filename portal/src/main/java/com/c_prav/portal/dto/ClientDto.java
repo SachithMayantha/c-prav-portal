@@ -12,6 +12,7 @@ public class ClientDto {
     private String company;
     private String contactPerson;
     private String mobile;
+    private String password;
     private String email;
     private String address;
 }

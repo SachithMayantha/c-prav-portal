@@ -27,40 +27,40 @@ public class OktaService {
     /**
      * Create user in Okta and assign to role-based group
      */
-    public void createOktaUser(String firstName, String lastName, String email, String password, String role) {
-        try {
-            // Prepare user profile
-            UserProfile userProfile = oktaClient.instantiate(UserProfile.class)
-                    .setEmail(email)
-                    .setLogin(email)
-                    .setFirstName(firstName)
-                    .setLastName(lastName);
 
-            // Prepare password credentials
-            char[] passwordChars = password.toCharArray();
-            PasswordCredential passwordCredential = oktaClient.instantiate(PasswordCredential.class)
-                    .setValue(passwordChars);
+    public void createOktaUser(
+            String firstName,
+            String lastName,
+            String email,
+            String tempPassword,
+            String role
+    ) {
+        // 1) Build profile & creds
+        UserProfile profile = oktaClient.instantiate(UserProfile.class)
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .setEmail(email)
+                .setLogin(email);
 
-            UserCredentials userCredentials = oktaClient.instantiate(UserCredentials.class)
-                    .setPassword(passwordCredential);
+        PasswordCredential pwd = oktaClient.instantiate(PasswordCredential.class)
+                .setValue(tempPassword.toCharArray());
 
-            // Create user request
-            CreateUserRequest createUserRequest = oktaClient.instantiate(CreateUserRequest.class)
-                    .setProfile(userProfile)
-                    .setCredentials(userCredentials);
+        CreateUserRequest req = oktaClient.instantiate(CreateUserRequest.class)
+                .setProfile(profile)
+                .setCredentials(oktaClient.instantiate(UserCredentials.class)
+                        .setPassword(pwd));
 
-            // Create user in Okta
-            User createdUser = oktaClient.createUser(createUserRequest);
-            System.out.println("User created: " + createdUser.getProfile().getEmail());
+        // 2) Create USER in STAGED state (activate=false) :contentReference[oaicite:0]{index=0}
+        User user = oktaClient.createUser(req, false, null, null);
 
-            // Assign user to group
-            assignUserToGroup(createdUser.getId(), role);
+        // 3) Activate silently (sendEmail=false) :contentReference[oaicite:1]{index=1}
+        user.activate(false);
 
-        } catch (Exception e) {
-            System.err.println("Error creating user: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Error creating user in Okta", e);
-        }
+        // 4) Send reset‑password email (sendEmail=true) :contentReference[oaicite:2]{index=2}
+        user.resetPassword(true);
+
+        // 5) (optional) Assign to group
+        assignUserToGroup(user.getId(), role);
     }
 
     /**
@@ -69,7 +69,8 @@ public class OktaService {
     private void assignUserToGroup(String userId, String role) {
         String groupId = getGroupIdFromRole(role);
 
-        String url = oktaApiUrl + "/api/v1/groups/" + groupId + "/users/" + userId;
+        String url = oktaApiUrl + "/api/v1/groups/" + groupId + "/users/" + userId
+                + "/credentials/forgot_password?sendEmail=true";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
