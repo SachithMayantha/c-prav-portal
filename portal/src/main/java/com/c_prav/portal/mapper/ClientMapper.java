@@ -11,6 +11,7 @@ public class ClientMapper {
                 clientEntity.getC_contact_person(),
                 clientEntity.getC_mobile(),
                 "",
+
                 clientEntity.getC_email(),
                 clientEntity.getC_address()
         );

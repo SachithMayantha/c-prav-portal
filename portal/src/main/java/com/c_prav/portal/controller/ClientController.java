@@ -3,6 +3,7 @@ package com.c_prav.portal.controller;
 import com.c_prav.portal.dto.ClientDto;
 import com.c_prav.portal.dto.UserDto;
 import com.c_prav.portal.service.ClientService;
+
 import com.c_prav.portal.service.OktaService;
 import com.c_prav.portal.service.UserService;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.List;
 @CrossOrigin
 public class ClientController {
     private ClientService clientService;
+
     private OktaService oktaService;
     private UserService userService;
 

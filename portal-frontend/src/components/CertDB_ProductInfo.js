@@ -6,6 +6,14 @@ const CertDB_ProductInfo = () => {
   const location = useLocation();
   const productData = location.state || {};
 
+
+  const handleViewPDF = () => {
+    console.log("User opened the PDF");
+  
+    // This should now correctly open the PDF in a new tab
+    window.open('/reports/test_report.pdf', '_blank');
+  };
+
   return (
     <div className="row">
       <div className="col-md-12 grid-margin stretch-card">
@@ -859,6 +867,7 @@ const CertDB_ProductInfo = () => {
                     <div className="table-responsive">
 
                       <div tyle={{ textAlign: 'right' }}>
+
                         <Button
                           variant="contained"
                           color="primary"
@@ -889,11 +898,13 @@ const CertDB_ProductInfo = () => {
                               <input type="checkbox" />
                             </td>
                             <td>
+
                               <a
                                 href="/download.php?fid=tzJ3dA4HqCxtimsLk4Mx9KoR0gFu5Wm13ApeL1KztjA"
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
+
                                 Test_Report_EMC_36174286380.pdf
                               </a>
                             </td>
@@ -927,14 +938,13 @@ const CertDB_ProductInfo = () => {
                                 href="#"
                                 title="Delete Exhibit"
                               >
+
                                 <i className="fa fa-fw fa-trash ibl-color-negative"></i>
                               </a>
                             </td>
                           </tr>
                         </tbody>
                       </table>
-
-
 
                     </div>
                   </div>

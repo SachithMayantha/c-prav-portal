@@ -11,7 +11,9 @@ const ClientDB = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const [showCountryModal, setShowCountryModal] = useState(false);
+
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState(null);
@@ -21,6 +23,7 @@ const ClientDB = () => {
     mobile: "",
     email: "",
     address: "",
+
     password: "",
     roles: "staff",
   });
@@ -30,6 +33,7 @@ const ClientDB = () => {
     status: "active",
   });
   const [formErrors, setFormErrors] = useState({});
+
 
   useEffect(() => {
     fetchClients();
@@ -45,6 +49,7 @@ const ClientDB = () => {
       setLoading(false);
     }
   };
+
 
   const handleClose = () => {
     setShowModal(false);
@@ -172,6 +177,7 @@ const ClientDB = () => {
 
     try {
       // Keep using the client save endpoint with the existing structure
+
       await axiosInstance.post("/client/save", formData);
       handleClose();
       // Reset form
@@ -181,8 +187,10 @@ const ClientDB = () => {
         mobile: "",
         email: "",
         address: "",
+
         password: "",
         roles: "staff",
+
       });
       // Refresh clients list
       fetchClients();
@@ -231,6 +239,7 @@ const ClientDB = () => {
                   Add Client
                 </Button>
               </div>
+
             </div>
 
             {/* Add Client Modal */}
@@ -296,6 +305,7 @@ const ClientDB = () => {
                           onChange={handleInputChange}
                           required
                           size="sm"
+
                           isInvalid={!!formErrors.email}
                         />
                         <Form.Control.Feedback type="invalid">
@@ -318,6 +328,7 @@ const ClientDB = () => {
                         <Form.Control.Feedback type="invalid">
                           {formErrors.password}
                         </Form.Control.Feedback>
+
                       </Form.Group>
                     </div>
                     <div className="col-12">
@@ -331,11 +342,13 @@ const ClientDB = () => {
                           onChange={handleInputChange}
                           required
                           size="sm"
+
                           isInvalid={!!formErrors.address}
                         />
                         <Form.Control.Feedback type="invalid">
                           {formErrors.address}
                         </Form.Control.Feedback>
+
                       </Form.Group>
                     </div>
                   </div>

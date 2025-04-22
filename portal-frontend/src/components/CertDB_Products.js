@@ -112,7 +112,9 @@ const CertDB_Products = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+
       await axiosInstance.post(`/product/save/${clientId}`, {
+
         companyName: formData.companyName,
         status: formData.status,
       });

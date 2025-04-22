@@ -24,4 +24,5 @@ public class TestReportEntity {
     private String c_file_type;
     private Date d_date;
     private String c_file_path;
+
 }
