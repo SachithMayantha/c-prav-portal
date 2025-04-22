@@ -1,10 +1,122 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axiosInstance from "../api/AxiosConfig";
 import Button from "@mui/material/Button";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useUserRoles } from "../hooks/useUserRoles";
+import { FaTrash } from "react-icons/fa";
 
 const CertDB_ProductInfo = () => {
+  const roles = useUserRoles();
   const location = useLocation();
+  const navigate = useNavigate();
   const productData = location.state || {};
+  const clientId = productData.clientId;
+
+  const [testReports, setTestReports] = useState([]);
+  const [certificates, setCertificates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loading_cer, setLoadingCer] = useState(true);
+
+  const [formData, setFormData] = useState({
+    productId: productData.productId || "",
+    name: productData.companyName || "",
+    customer: "",
+    comment: "",
+    productManager: [],
+    frequencies: [],
+  });
+
+  const [submitStatus, setSubmitStatus] = useState({
+    success: false,
+    message: "",
+  });
+
+  useEffect(() => {
+    fetchReports();
+    fetchCertificates();
+  }, []);
+
+  const fetchReports = async () => {
+    try {
+      const response = await axiosInstance.get("/report/getReports");
+      setTestReports(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+      setLoading(false);
+    }
+  };
+
+  const fetchCertificates = async () => {
+    try {
+      const response = await axiosInstance.get("/certificate/getCertificates");
+      setCertificates(response.data);
+      setLoadingCer(false);
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+      setLoadingCer(false);
+    }
+  };
+
+  const handleViewPDF = () => {
+    console.log("User opened the PDF");
+
+    // This should now correctly open the PDF in a new tab
+    window.open("/reports/test_report.pdf", "_blank");
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleFrequencyChange = (e) => {
+    const { value, checked } = e.target;
+    setFormData((prevState) => {
+      const frequencies = checked
+        ? [...prevState.frequencies, value]
+        : prevState.frequencies.filter((freq) => freq !== value);
+      return { ...prevState, frequencies };
+    });
+  };
+
+  const handleProductManagerChange = (e) => {
+    const options = e.target.options;
+    const selectedValues = [];
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].selected) {
+        selectedValues.push(options[i].value);
+      }
+    }
+    setFormData((prevState) => ({
+      ...prevState,
+      productManager: selectedValues,
+    }));
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axiosInstance.post(
+        `/product/save/${clientId}`,
+        formData
+      );
+      setSubmitStatus({
+        success: true,
+        message: "Product saved successfully",
+      });
+      // Optionally navigate back or refresh data
+    } catch (error) {
+      console.error("Error saving product:", error);
+      setSubmitStatus({
+        success: false,
+        message: error.response?.data?.message || "Failed to save product",
+      });
+    }
+  };
 
   return (
     <div className="row">
@@ -65,7 +177,7 @@ const CertDB_ProductInfo = () => {
                 <div className="media">
                   <div className="row mt-3">
                     <div className="col-lg-12 col-xl-6">
-                      <form action="" method="POST" name="productDetailsForm">
+                      <form onSubmit={handleSave} name="productDetailsForm">
                         <div
                           className="card mb-3"
                           style={{ border: "1px solid #dbdbd9" }}
@@ -82,6 +194,15 @@ const CertDB_ProductInfo = () => {
                             </div>
                           </div>
                           <div className="card-body">
+                            {submitStatus.message && (
+                              <div
+                                className={`alert alert-${
+                                  submitStatus.success ? "success" : "danger"
+                                }`}
+                              >
+                                {submitStatus.message}
+                              </div>
+                            )}
                             <div className="form-group row">
                               <label
                                 className="col-xl-3 col-form-label"
@@ -94,7 +215,7 @@ const CertDB_ProductInfo = () => {
                                   className="form-control"
                                   readOnly
                                   type="text"
-                                  value={productData.productId || ""}
+                                  value={"C20250400"+formData.productId}
                                 />
                               </div>
                             </div>
@@ -112,12 +233,13 @@ const CertDB_ProductInfo = () => {
                                   name="name"
                                   type="text"
                                   placeholder="Product Name"
-                                  value={productData.companyName || ""}
+                                  value={formData.name}
+                                  onChange={handleInputChange}
                                 />
                               </div>
                             </div>
 
-                            <div className="form-group row">
+                            {/* <div className="form-group row">
                               <label
                                 className="col-xl-3 col-form-label"
                                 htmlFor="customer"
@@ -129,17 +251,20 @@ const CertDB_ProductInfo = () => {
                                   className="form-control"
                                   id="customer"
                                   name="customer"
+                                  value={formData.customer}
+                                  onChange={handleInputChange}
                                   style={{
                                     height: "38px",
                                     paddingTop: "10px",
                                     paddingBottom: "10px",
                                   }}
                                 >
-                                  <option>one</option>
-                                  <option>two</option>
+                                  <option value="">Select Company</option>
+                                  <option value="one">One</option>
+                                  <option value="two">Two</option>
                                 </select>
                               </div>
-                            </div>
+                            </div> */}
 
                             <div className="form-group row">
                               <label
@@ -155,13 +280,15 @@ const CertDB_ProductInfo = () => {
                                   name="comment"
                                   rows="11"
                                   cols="40"
+                                  value={formData.comment}
+                                  onChange={handleInputChange}
                                 >
-                                  {productData.comments || ""}
+                                  {formData.comment}
                                 </textarea>
                               </div>
                             </div>
 
-                            <div className="form-group row">
+                            {/* <div className="form-group row">
                               <label
                                 className="col-xl-3 col-form-label"
                                 htmlFor="text-input"
@@ -171,25 +298,19 @@ const CertDB_ProductInfo = () => {
                               <div className="col-xl-9 col-form-label">
                                 <div>
                                   <select
-                                    name="customer_product_manager[]"
+                                    name="productManager"
                                     className="form-control select2 select2-hidden-accessible"
                                     multiple=""
-                                    data-select2-id="1"
-                                    tabIndex="-1"
-                                    aria-hidden="true"
+                                    value={formData.productManager}
+                                    onChange={handleProductManagerChange}
                                   >
-                                    {productData.productManager ? (
-                                      <option
-                                        value={productData.productManager}
-                                        selected
-                                      >
-                                        {productData.productManager}
-                                      </option>
-                                    ) : null}
+                                    <option value="manager1">Manager 1</option>
+                                    <option value="manager2">Manager 2</option>
+                                    <option value="manager3">Manager 3</option>
                                   </select>
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
                             <input
                               type="hidden"
                               name="check_compliance_score"
@@ -203,15 +324,15 @@ const CertDB_ProductInfo = () => {
                           </div>
 
                           <div className="card-footer text-right">
-                            <button
+                            {/* <button
                               type="submit"
                               name="generalButtonEOL"
                               id="generalButtonEOL"
                               className="btn btn-danger"
                             >
                               Set all Certs for this Product immediately EOL
-                            </button>
-                            <button
+                            </button> */}
+                            {/* <button
                               type="submit"
                               className="btn btn-secondary"
                               id="generalButtonDele"
@@ -219,7 +340,7 @@ const CertDB_ProductInfo = () => {
                               value="prodGeneralDele"
                             >
                               <i className="fa fa-fw fa-archive"></i> Archive
-                            </button>
+                            </button> */}
                             <button
                               type="submit"
                               className="btn btn-primary"
@@ -657,65 +778,65 @@ const CertDB_ProductInfo = () => {
                           style={{ border: "1px solid #dbdbd9" }}
                         >
                           {/* <div
-                            className="card-header"
-                            data-tour="true"
-                            data-step="3"
-                            data-intro="Here you can see the product ID with further information.<br/>"
-                          >
-                            <i className="fa fa-table"></i>
-                            Product-ID (PID){" "}
-                            <div className="card-actions">
-                              <div id="pidWidgetModeToggle"></div>
-                              <a
-                                data-tour="true"
-                                data-step="4"
-                                data-intro="If you want to edit the product ID, click here.<br/>"
-                                href="product_pid.php?pid=kmxAjihHd20Lek1soPZO8L86jrPj5Z1meoQy6mk0jcMQ8Wb"
-                                title=""
-                                data-original-title="Edit PID"
-                              >
-                                <i className="fa fa-fw fa-edit"></i>
-                              </a>
-                            </div>
-                          </div> */}
+ className="card-header"
+ data-tour="true"
+ data-step="3"
+ data-intro="Here you can see the product ID with further information.<br/>"
+ >
+ <i className="fa fa-table"></i>
+ Product-ID (PID){" "}
+ <div className="card-actions">
+ <div id="pidWidgetModeToggle"></div>
+ <a
+ data-tour="true"
+ data-step="4"
+ data-intro="If you want to edit the product ID, click here.<br/>"
+ href="product_pid.php?pid=kmxAjihHd20Lek1soPZO8L86jrPj5Z1meoQy6mk0jcMQ8Wb"
+ title=""
+ data-original-title="Edit PID"
+ >
+ <i className="fa fa-fw fa-edit"></i>
+ </a>
+ </div>
+ </div> */}
                           {/* <div
-                            className="pidOemWidget"
-                            id="PID_OEM_TARGET_DIV"
-                          ></div>
-                          <div className="card-body pidSysWidget" id="pidCards">
-                            <div className="card">
-                              <div className="card-header">
-                                Basic Keys{" "}
-                                <div className="card-actions">
-                                  <a
-                                    href="product_detail?pid=kmxAjihHd20Lek1soPZO8L86jrPj5Z1meoQy6mk0jcMQ8Wb&amp;pidExport=bmMOpA4PgOQ-tPVbcmRBmGc72NA9DPfb8Krw0kWg2-2cqW2"
-                                    target="_blank"
-                                  >
-                                    <i
-                                      className="fas fa-file-export"
-                                      title=""
-                                      data-original-title="Export Basic PID Keys"
-                                    ></i>
-                                  </a>
-                                </div>
-                              </div>
-                              <div className="card-body">
-                                <div className="alert alert-warning">
-                                  No PID available.
-                                </div>
-                              </div>
-                            </div>
-                          </div> */}
+ className="pidOemWidget"
+ id="PID_OEM_TARGET_DIV"
+ ></div>
+ <div className="card-body pidSysWidget" id="pidCards">
+ <div className="card">
+ <div className="card-header">
+ Basic Keys{" "}
+ <div className="card-actions">
+ <a
+ href="product_detail?pid=kmxAjihHd20Lek1soPZO8L86jrPj5Z1meoQy6mk0jcMQ8Wb&amp;pidExport=bmMOpA4PgOQ-tPVbcmRBmGc72NA9DPfb8Krw0kWg2-2cqW2"
+ target="_blank"
+ >
+ <i
+ className="fas fa-file-export"
+ title=""
+ data-original-title="Export Basic PID Keys"
+ ></i>
+ </a>
+ </div>
+ </div>
+ <div className="card-body">
+ <div className="alert alert-warning">
+ No PID available.
+ </div>
+ </div>
+ </div>
+ </div> */}
 
                           {/* <div className="card-footer pidSysWidget">
-                            <div id="pidReviewStatus">
-                              <div className="text-muted pb-3">
-                                <i className="fa fa-fw fa-info-square pr-4"></i>
-                                Currently, this PID is not undergoing Customer
-                                review.
-                              </div>{" "}
-                            </div>
-                          </div> */}
+ <div id="pidReviewStatus">
+ <div className="text-muted pb-3">
+ <i className="fa fa-fw fa-info-square pr-4"></i>
+ Currently, this PID is not undergoing Customer
+ review.
+ </div>{" "}
+ </div>
+ </div> */}
                         </div>
                       </form>
                     </div>
@@ -727,7 +848,8 @@ const CertDB_ProductInfo = () => {
                 className="tab-pane fade"
                 id="profile-1"
                 role="tabpanel"
-                aria-labelledby="profile-tab">
+                aria-labelledby="profile-tab"
+              >
                 <div
                   className="card card_product_detail_certificates"
                   style={{ border: "1px solid #dbdbd9" }}
@@ -743,105 +865,142 @@ const CertDB_ProductInfo = () => {
                   </div>
                   <div className="card-body">
                     <div className="table-responsive">
-                      <table className="table table-hover table-striped">
-                        <thead className="thead-light">
-                          <tr>
-                            <th width="72"></th>
-                            <th className="column-min-width-110">
-                              <span>Country</span>
-                            </th>
-                            <th className="column-min-width-110 text-center">
-                              <span>Cert.D.</span>
-                            </th>
-                            <th className="column-min-width-110 text-center">
-                              <span>Exp.D.</span>
-                            </th>
-                            <th className="column-min-width-110 text-center">
-                              <span>Status</span>
-                            </th>
-                            <th className="column-min-width-110 text-center">
-                              <span>Progress</span>
-                            </th>
-                            <th className="column-min-width-110 text-center">
-                              <span>Certificate</span>
-                            </th>
-                            <th className="text-center column-min-width-90">
-                              <span>Com.</span>
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>
-                              <a
-                                className="btn btn-sm btn-outline-gray-500"
-                                href="#"
-                                title="Cert Files"
+                      {loading_cer ? (
+                        <div className="text-center">Loading...</div>
+                      ) : (
+                        <table className="table table-hover table-striped">
+                          <thead className="thead-light">
+                            <tr>
+                              <th width="72"></th>
+                              <th className="column-min-width-110">
+                                <span>Country</span>
+                              </th>
+                              <th className="column-min-width-110 text-center">
+                                <span>Cert.D.</span>
+                              </th>
+                              <th className="column-min-width-110 text-center">
+                                <span>Exp.D.</span>
+                              </th>
+                              <th className="column-min-width-110 text-center">
+                                <span>Status</span>
+                              </th>
+                              <th className="column-min-width-110 text-center">
+                                <span>Progress</span>
+                              </th>
+                              <th className="column-min-width-110 text-center">
+                                <span>Certificate</span>
+                              </th>
+                              <th className="text-center column-min-width-90">
+                                <span>Com.</span>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {certificates.map((cert) => (
+                              <tr
+                              // key={client.clientId}
+                              // onClick={() => handleRowClick(client)}
+                              // style={{ cursor: "pointer" }}
                               >
-                                <i className="fas fa-search"></i>
-                              </a>
-                              <a
-                                className="btn btn-sm btn-outline-gray-500"
-                                href="#"
-                                title="Info"
-                              >
-                                <i className="fas fa-info"></i>
-                              </a>
-                            </td>
-                            <td>Afghanistan</td>
-                            <td className="text-center">2025-01-24</td>
-                            <td className="text-center">
-                              <span
-                                style={{ lineHeight: "20px", fontSize: "20px" }}
-                              >
-                                ∞
-                              </span>
-                            </td>
-                            <td className="text-center">
-                              <span
-                                className="fa fa-lg fa-fw fa-star"
-                                style={{ color: "#66cc99" }}
-                              ></span>
-                            </td>
-                            <td className="text-left"></td>
-                            <td className="text-center">
-                              <a
-                                className="ibl-lightbox"
-                                href="#"
-                                style={{ cursor: "pointer" }}
-                              >
-                                <span
-                                  className="fa fa-lg fa-fw far fa-file-alt"
-                                  style={{ color: "#666666" }}
-                                ></span>
-                              </a>
-                            </td>
-                            <td className="text-center">
-                              <span
-                                className="fa fa-lg fa-fw fa-comment"
-                                style={{ color: "#666666" }}
-                              ></span>
-                              <span
-                                className="fa fa-lg fa-fw fa-comments"
-                                style={{ color: "#666666" }}
-                              ></span>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
+                                <td>
+                                  <a
+                                    className="btn btn-sm btn-outline-gray-500"
+                                    href="#"
+                                    title="Cert Files"
+                                  >
+                                    <i className="fas fa-search"></i>
+                                  </a>
+                                  <a
+                                    className="btn btn-sm btn-outline-gray-500"
+                                    href="#"
+                                    title="Info"
+                                  >
+                                    <i className="fas fa-info"></i>
+                                  </a>
+                                </td>
+                                <td>{cert.c_comments}</td>
+                                <td className="text-center">2025-01-24</td>
+                                <td className="text-center">
+                                  <span
+                                    style={{
+                                      lineHeight: "20px",
+                                      fontSize: "20px",
+                                    }}
+                                  >
+                                    ∞
+                                  </span>
+                                </td>
+                                <td className="text-center">
+                                  <span
+                                    className="fa fa-lg fa-fw fa-star"
+                                    style={{ color: "#66cc99" }}
+                                  ></span>
+                                </td>
+                                <td className="text-left"></td>
+                                <td className="text-center">
+                                  <a
+                                    className="ibl-lightbox"
+                                    href="#"
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    <span
+                                      className="fa fa-lg fa-fw far fa-file-alt"
+                                      style={{ color: "#666666" }}
+                                    ></span>
+                                  </a>
+                                </td>
+                                <td className="text-center">
+                                  <span
+                                    className="fa fa-lg fa-fw fa-comment"
+                                    style={{ color: "#666666" }}
+                                  ></span>
+                                  <span
+                                    className="fa fa-lg fa-fw fa-comments"
+                                    style={{ color: "#666666" }}
+                                  ></span>
+                                </td>
+
+                                <td className="text-right buttons">
+                                  <a
+                                    className="btn btn-sm btn-outline-gray-500 mr-1"
+                                    title="Edit Testreport"
+                                  >
+                                    <i className="fa fa-fw fa-edit"></i>
+                                  </a>
+                                  <a
+                                    className="btn btn-sm btn-outline-gray-500 mr-1"
+                                    title="Archive Testreport"
+                                  >
+                                    <i className="fa fa-fw fa-archive"></i>
+                                  </a>
+                                  {roles.includes("admin") && (
+                                    <Button
+                                      variant="link"
+                                      className="text-danger p-0"
+                                      // onClick={(e) =>
+                                      // handleDeleteClick(client, e)
+                                      // }
+                                    >
+                                      <FaTrash />
+                                    </Button>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
 
-
-
-
               <div
                 className="tab-pane fade"
                 id="profile-3"
                 role="tabpanel"
-                aria-labelledby="profile-tab">
+                aria-labelledby="profile-tab"
+              >
                 <div
                   className="card card_product_detail_certificates"
                   style={{ border: "1px solid #dbdbd9" }}
@@ -852,13 +1011,12 @@ const CertDB_ProductInfo = () => {
                     data-step="1"
                     data-intro="Here you can see a list of all certificates in this product. The number in brackets shows how many certificates there are."
                   >
-                    <i className="fa fa-lg fa-fw fa-file-certificate"></i>{" "}
-                    Test Reports
+                    <i className="fa fa-lg fa-fw fa-file-certificate"></i> Test
+                    Reports
                   </div>
                   <div className="card-body">
                     <div className="table-responsive">
-
-                      <div tyle={{ textAlign: 'right' }}>
+                      <div style={{ textAlign: "right" }}>
                         <Button
                           variant="contained"
                           color="primary"
@@ -868,79 +1026,92 @@ const CertDB_ProductInfo = () => {
                         </Button>
                       </div>
 
-                      <table className="table table-hover table-striped mb-3">
-                        <thead className="thead-light">
-                          <tr>
-                            <th width="5%">
-                              <input type="checkbox" />
-                            </th>
-                            <th width="35%">Exhibit Name</th>
-                            <th width="15%">File Category</th>
-                            <th width="10%">Filetype</th>
-                            <th width="10%">Date</th>
-                            <th width="10%">Uploaded by</th>
-                            <th width="10%">Allow Deletion</th>
-                            <th width="10%" className="text-right"></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>
-                              <input type="checkbox" />
-                            </td>
-                            <td>
-                              <a
-                                href="/download.php?fid=tzJ3dA4HqCxtimsLk4Mx9KoR0gFu5Wm13ApeL1KztjA"
-                                target="_blank"
-                                rel="noopener noreferrer"
+                      {loading ? (
+                        <div className="text-center">Loading...</div>
+                      ) : (
+                        <table className="table table-hover table-striped mb-3">
+                          <thead className="thead-light">
+                            <tr>
+                              <th width="5%">
+                                <input type="checkbox" />
+                              </th>
+                              <th width="35%">Exhibit Name</th>
+                              <th width="15%">File Category</th>
+                              <th width="10%">Filetype</th>
+                              <th width="10%">Date</th>
+                              <th width="10%">Uploaded by</th>
+                              <th width="10%">Allow Deletion</th>
+                              <th width="10%" className="text-right"></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {testReports.map((report) => (
+                              <tr
+                              // key={client.clientId}
+                              // onClick={() => handleRowClick(client)}
+                              // style={{ cursor: "pointer" }}
                               >
-                                Test_Report_EMC_36174286380.pdf
-                              </a>
-                            </td>
-                            <td>Test Report EMC</td>
-                            <td>
-                              <div>application/pdf</div>
-                              <div className="small text-muted">0.03 MB</div>
-                            </td>
-                            <td>2025-03-25 01:50:09</td>
-                            <td>richa@c-prav.com</td>
-                            <td>
-                              <input type="checkbox" />
-                            </td>
-                            <td className="text-right buttons">
-                              <a
-                                className="btn btn-sm btn-outline-gray-500 mr-1"
-                                href="/product_detail_exhibits_edit.php?pid=1938&id=tzJ3dA4HqCxtimsLk4Mx9KoR0gFu5Wm13ApeL1KztjA"
-                                title="Edit Testreport"
-                              >
-                                <i className="fa fa-fw fa-edit"></i>
-                              </a>
-                              <a
-                                className="btn btn-sm btn-outline-gray-500 mr-1"
-                                href="#"
-                                title="Archive Testreport"
-                              >
-                                <i className="fa fa-fw fa-archive"></i>
-                              </a>
-                              <a
-                                className="btn btn-sm btn-outline-gray-500 mr-1"
-                                href="#"
-                                title="Delete Exhibit"
-                              >
-                                <i className="fa fa-fw fa-trash ibl-color-negative"></i>
-                              </a>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
+                                <td>
+                                  <input type="checkbox" />
+                                </td>
 
+                                <td>
+                                  <a
+                                    href=""
+                                    onClick={handleViewPDF}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {report.c_rep_name}
+                                  </a>
+                                </td>
+                                <td>{report.c_file_cat_name}</td>
 
-
+                                <td>
+                                  <div>application/pdf</div>
+                                  <div className="small text-muted">
+                                    0.03 MB
+                                  </div>
+                                </td>
+                                <td>2025-03-25 01:50:09</td>
+                                <td>richa@c-prav.com</td>
+                                <td>
+                                  <input type="checkbox" />
+                                </td>
+                                <td className="text-right buttons">
+                                  <a
+                                    className="btn btn-sm btn-outline-gray-500 mr-1"
+                                    title="Edit Testreport"
+                                  >
+                                    <i className="fa fa-fw fa-edit"></i>
+                                  </a>
+                                  <a
+                                    className="btn btn-sm btn-outline-gray-500 mr-1"
+                                    title="Archive Testreport"
+                                  >
+                                    <i className="fa fa-fw fa-archive"></i>
+                                  </a>
+                                  {roles.includes("admin") && (
+                                    <Button
+                                      variant="link"
+                                      className="text-danger p-0"
+                                      // onClick={(e) =>
+                                      // handleDeleteClick(client, e)
+                                      // }
+                                    >
+                                      <FaTrash />
+                                    </Button>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>

@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ClientProductRepository extends JpaRepository<ClientProductEntity,Integer> {
+public interface ClientProductRepository extends JpaRepository<ClientProductEntity, Integer> {
 
     @Modifying
     @Transactional // add this here too (or use service-level @Transactional)
