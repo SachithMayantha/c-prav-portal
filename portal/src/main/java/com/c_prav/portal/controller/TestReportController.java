@@ -7,11 +7,9 @@ import com.c_prav.portal.service.impl.TestReportServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -22,8 +20,13 @@ public class TestReportController {
 
     private TestReportServiceImpl testReportService;
 
-    @GetMapping("getReports")
-    public ResponseEntity<List<TestReportDto>> getTestReports() {
-        return new ResponseEntity<>(testReportService.getTestReports(), HttpStatus.OK);
+    @GetMapping("{n_product_id}")
+    public ResponseEntity<List<TestReportDto>> getTestReports(@PathVariable("n_product_id") int n_product_id) throws ParseException {
+        return new ResponseEntity<>(testReportService.getTestReportsByProductID(n_product_id), HttpStatus.OK);
+    }
+
+    @PostMapping("save")
+    public ResponseEntity<TestReportDto> saveTestReport(@RequestBody TestReportDto testReportDto) throws ParseException {
+        return new ResponseEntity<>(testReportService.saveTestReport(testReportDto), HttpStatus.OK);
     }
 }

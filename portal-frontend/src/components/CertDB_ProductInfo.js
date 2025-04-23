@@ -4,8 +4,13 @@ import Button from "@mui/material/Button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUserRoles } from "../hooks/useUserRoles";
 import { FaTrash } from "react-icons/fa";
+import { Modal, Form } from "react-bootstrap";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { useOktaAuth } from "@okta/okta-react";
 
 const CertDB_ProductInfo = () => {
+  const { authState } = useOktaAuth();
   const roles = useUserRoles();
   const location = useLocation();
   const navigate = useNavigate();
@@ -19,11 +24,9 @@ const CertDB_ProductInfo = () => {
 
   const [formData, setFormData] = useState({
     productId: productData.productId || "",
-    name: productData.companyName || "",
-    customer: "",
-    comment: "",
-    productManager: [],
-    frequencies: [],
+    companyName: productData.companyName || "",
+    comments: productData.comments || "",
+    status: productData.status || "Active",
   });
 
   const [submitStatus, setSubmitStatus] = useState({
@@ -31,30 +34,134 @@ const CertDB_ProductInfo = () => {
     message: "",
   });
 
+  const [technologies, setTechnologies] = useState([]);
+  const [productTechnologies, setProductTechnologies] = useState([]);
+  const [loadingTech, setLoadingTech] = useState(true);
+  const [selectedTechnologies, setSelectedTechnologies] = useState([]);
+
+  const [loadingCert, setLoadingCert] = useState(true);
+  const [countryNames, setCountryNames] = useState({});
+
+  const [showComments, setShowComments] = useState(false);
+  const [selectedComments, setSelectedComments] = useState("");
+
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
+  const [countries, setCountries] = useState([]);
+  const [loadingCountries, setLoadingCountries] = useState(true);
+  const [certificateForm, setCertificateForm] = useState({
+    n_product_id: formData.productId,
+    n_country_id: "",
+    c_cert_date: new Date(),
+    c_exp_date: new Date(),
+    c_status: "In Progress",
+    c_comments: "",
+    certificateFile: null,
+  });
+
+  const [showTestReportModal, setShowTestReportModal] = useState(false);
+  const [testReportForm, setTestReportForm] = useState({
+    n_product_id: formData.productId,
+    c_uploaded_by: "",
+    c_file_cat_name: "Test Report EMC",
+    c_rep_name: "",
+    c_file_type: "PDF",
+    d_date: new Date().toISOString().split("T")[0],
+    c_file_path: "",
+    testReportFile: null,
+  });
+
   useEffect(() => {
     fetchReports();
     fetchCertificates();
-  }, []);
+    fetchTechnologies();
+    if (formData.productId) {
+      fetchProductTechnologies();
+      fetchCountries();
+    }
+    if (authState?.idToken?.claims?.sub) {
+      setTestReportForm((prev) => ({
+        ...prev,
+        c_uploaded_by: authState.idToken.claims.sub,
+      }));
+    }
+  }, [formData.productId, authState?.idToken?.claims?.sub]);
 
   const fetchReports = async () => {
     try {
-      const response = await axiosInstance.get("/report/getReports");
+      const response = await axiosInstance.get(`/report/${formData.productId}`);
       setTestReports(response.data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching clients:", error);
+      console.error("Error fetching reports:", error);
       setLoading(false);
+    }
+  };
+
+  const fetchCountryName = async (countryId) => {
+    try {
+      const response = await axiosInstance.get(`/country/${countryId}`);
+      setCountryNames((prev) => ({
+        ...prev,
+        [countryId]: response.data.country,
+      }));
+    } catch (error) {
+      console.error("Error fetching country name:", error);
     }
   };
 
   const fetchCertificates = async () => {
     try {
-      const response = await axiosInstance.get("/certificate/getCertificates");
+      const response = await axiosInstance.get(
+        `/certificate/${formData.productId}`
+      );
       setCertificates(response.data);
-      setLoadingCer(false);
+      // Fetch country names for each certificate
+      response.data.forEach((cert) => {
+        if (!countryNames[cert.n_country_id]) {
+          fetchCountryName(cert.n_country_id);
+        }
+      });
+      setLoadingCert(false);
     } catch (error) {
-      console.error("Error fetching clients:", error);
-      setLoadingCer(false);
+      console.error("Error fetching certificates:", error);
+      setLoadingCert(false);
+    }
+  };
+
+  const fetchTechnologies = async () => {
+    try {
+      const response = await axiosInstance.get("/technology/getAll");
+      setTechnologies(response.data);
+      setLoadingTech(false);
+    } catch (error) {
+      console.error("Error fetching technologies:", error);
+      setLoadingTech(false);
+    }
+  };
+
+  const fetchProductTechnologies = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `/technologies/${formData.productId}`
+      );
+      const techIds = response.data.map((tech) =>
+        tech.n_technology_id.toString()
+      );
+      setProductTechnologies(response.data);
+      setSelectedTechnologies(techIds);
+    } catch (error) {
+      console.error("Error fetching product technologies:", error);
+    }
+  };
+
+  const fetchCountries = async () => {
+    try {
+      const response = await axiosInstance.get("/country/getCountries");
+      setCountries(response.data);
+      setLoadingCountries(false);
+    } catch (error) {
+      console.error("Error fetching countries:", error);
+      setLoadingCountries(false);
     }
   };
 
@@ -97,23 +204,215 @@ const CertDB_ProductInfo = () => {
     }));
   };
 
+  const handleTechnologyChange = (e) => {
+    const { value, checked } = e.target;
+    setSelectedTechnologies((prevState) => {
+      if (checked) {
+        return [...prevState, value];
+      } else {
+        return prevState.filter((tech) => tech !== value);
+      }
+    });
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const response = await axiosInstance.post(
-        `/product/save/${clientId}`,
-        formData
+      const response = await axiosInstance.put(`/product/update`, {
+        productId: +formData.productId,
+        companyName: formData.companyName,
+        comments: formData.comments,
+        status: formData.status,
+      });
+      setSubmitStatus({
+        success: true,
+        message: "Product updated successfully",
+      });
+    } catch (error) {
+      console.error("Error updating product:", error);
+      setSubmitStatus({
+        success: false,
+        message: error.response?.data?.message || "Failed to update product",
+      });
+    }
+  };
+
+  const handleSaveTechnologies = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axiosInstance.put(
+        `/technologies/${formData.productId}`,
+        selectedTechnologies.map((id) => parseInt(id))
       );
       setSubmitStatus({
         success: true,
-        message: "Product saved successfully",
+        message: "Technologies updated successfully",
       });
-      // Optionally navigate back or refresh data
     } catch (error) {
-      console.error("Error saving product:", error);
+      console.error("Error updating technologies:", error);
       setSubmitStatus({
         success: false,
-        message: error.response?.data?.message || "Failed to save product",
+        message:
+          error.response?.data?.message || "Failed to update technologies",
+      });
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Approved":
+        return "text-success";
+      case "In Progress":
+        return "text-warning";
+      case "Ends Soon":
+        return "text-#0c0c41";
+      default:
+        return "text-secondary";
+    }
+  };
+
+  const getProgressPercentage = (status) => {
+    switch (status) {
+      case "Approved":
+        return 100;
+      case "In Progress":
+        return 40;
+      case "Ends Soon":
+        return 70;
+      default:
+        return 0;
+    }
+  };
+
+  const getProgressColor = (status) => {
+    switch (status) {
+      case "Approved":
+        return "bg-success";
+      case "In Progress":
+        return "bg-warning";
+      case "Ends Soon":
+        return "bg-#0c0c41";
+      default:
+        return "bg-secondary";
+    }
+  };
+
+  const handleShowComments = (comments) => {
+    setSelectedComments(comments);
+    setShowComments(true);
+  };
+
+  const handleCloseComments = () => {
+    setShowComments(false);
+    setSelectedComments("");
+  };
+
+  const handleCertificateInputChange = (e) => {
+    const { name, value } = e.target;
+    setCertificateForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleDateChange = (date, field) => {
+    setCertificateForm((prev) => ({
+      ...prev,
+      [field]: date,
+    }));
+  };
+
+  const handleFileChange = (e) => {
+    setCertificateForm((prev) => ({
+      ...prev,
+      certificateFile: e.target.files[0],
+    }));
+  };
+
+  const handleSaveCertificate = async (e) => {
+    e.preventDefault();
+    try {
+      // Save file locally
+      if (certificateForm.certificateFile) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          const filePath = `C:/Users/sachi/OneDrive/Desktop/c-prav-portal/portal-frontend/Documents/${certificateForm.certificateFile.name}`;
+          // Here you would typically save the file using a file system API
+          // For now, we'll just log the path
+          console.log("File would be saved to:", filePath);
+        };
+        reader.readAsArrayBuffer(certificateForm.certificateFile);
+      }
+
+      // Save certificate data
+      const response = await axiosInstance.post("/certificate/save", {
+        ...certificateForm,
+        c_cert_date: certificateForm.c_cert_date.toISOString().split("T")[0],
+        c_exp_date: certificateForm.c_exp_date.toISOString().split("T")[0],
+        certificateFile: undefined, // Remove file from API request
+      });
+
+      setShowCertificateModal(false);
+      fetchCertificates(); // Refresh certificates list
+      setSubmitStatus({
+        success: true,
+        message: "Certificate assigned successfully",
+      });
+    } catch (error) {
+      console.error("Error saving certificate:", error);
+      setSubmitStatus({
+        success: false,
+        message:
+          error.response?.data?.message || "Failed to assign certificate",
+      });
+    }
+  };
+
+  const handleTestReportInputChange = (e) => {
+    const { name, value } = e.target;
+    setTestReportForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleTestReportFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setTestReportForm((prev) => ({
+        ...prev,
+        testReportFile: file,
+        c_rep_name: file.name,
+      }));
+    }
+  };
+
+  const handleSaveTestReport = async (e) => {
+    e.preventDefault();
+    try {
+      const reportData = {
+        n_product_id: testReportForm.n_product_id,
+        c_uploaded_by: testReportForm.c_uploaded_by,
+        c_file_cat_name: testReportForm.c_file_cat_name,
+        c_rep_name: testReportForm.c_rep_name,
+        c_file_type: testReportForm.c_file_type,
+        d_date: testReportForm.d_date,
+        c_file_path: testReportForm.c_file_path,
+      };
+
+      const response = await axiosInstance.post("/report/save", reportData);
+
+      setShowTestReportModal(false);
+      fetchReports(); // Refresh test reports list
+      setSubmitStatus({
+        success: true,
+        message: "Test report added successfully",
+      });
+    } catch (error) {
+      console.error("Error saving test report:", error);
+      setSubmitStatus({
+        success: false,
+        message: error.response?.data?.message || "Failed to add test report",
       });
     }
   };
@@ -206,7 +505,7 @@ const CertDB_ProductInfo = () => {
                             <div className="form-group row">
                               <label
                                 className="col-xl-3 col-form-label"
-                                htmlFor="name"
+                                htmlFor="productId"
                               >
                                 Product-ID
                               </label>
@@ -215,43 +514,42 @@ const CertDB_ProductInfo = () => {
                                   className="form-control"
                                   readOnly
                                   type="text"
-                                  value={"C20250400"+formData.productId}
+                                  value={+formData.productId}
                                 />
                               </div>
                             </div>
                             <div className="form-group row">
                               <label
                                 className="col-xl-3 col-form-label"
-                                htmlFor="name"
+                                htmlFor="companyName"
                               >
                                 Name
                               </label>
                               <div className="col-xl-9">
                                 <input
                                   className="form-control"
-                                  id="name"
-                                  name="name"
+                                  id="companyName"
+                                  name="companyName"
                                   type="text"
                                   placeholder="Product Name"
-                                  value={formData.name}
+                                  value={formData.companyName}
                                   onChange={handleInputChange}
                                 />
                               </div>
                             </div>
-
-                            {/* <div className="form-group row">
+                            <div className="form-group row">
                               <label
                                 className="col-xl-3 col-form-label"
-                                htmlFor="customer"
+                                htmlFor="status"
                               >
-                                Company
+                                Status
                               </label>
                               <div className="col-xl-9">
                                 <select
                                   className="form-control"
-                                  id="customer"
-                                  name="customer"
-                                  value={formData.customer}
+                                  id="status"
+                                  name="status"
+                                  value={formData.status}
                                   onChange={handleInputChange}
                                   style={{
                                     height: "38px",
@@ -259,58 +557,31 @@ const CertDB_ProductInfo = () => {
                                     paddingBottom: "10px",
                                   }}
                                 >
-                                  <option value="">Select Company</option>
-                                  <option value="one">One</option>
-                                  <option value="two">Two</option>
+                                  <option value="Active">Active</option>
+                                  <option value="Renew">Renew</option>
+                                  <option value="Inactive">Inactive</option>
                                 </select>
                               </div>
-                            </div> */}
-
+                            </div>
                             <div className="form-group row">
                               <label
                                 className="col-xl-3 col-form-label"
-                                htmlFor="comment"
+                                htmlFor="comments"
                               >
                                 Comment
                               </label>
                               <div className="col-xl-9">
                                 <textarea
                                   className="form-control"
-                                  id="comment"
-                                  name="comment"
+                                  id="comments"
+                                  name="comments"
                                   rows="11"
                                   cols="40"
-                                  value={formData.comment}
+                                  value={formData.comments}
                                   onChange={handleInputChange}
-                                >
-                                  {formData.comment}
-                                </textarea>
+                                />
                               </div>
                             </div>
-
-                            {/* <div className="form-group row">
-                              <label
-                                className="col-xl-3 col-form-label"
-                                htmlFor="text-input"
-                              >
-                                Product Manager
-                              </label>
-                              <div className="col-xl-9 col-form-label">
-                                <div>
-                                  <select
-                                    name="productManager"
-                                    className="form-control select2 select2-hidden-accessible"
-                                    multiple=""
-                                    value={formData.productManager}
-                                    onChange={handleProductManagerChange}
-                                  >
-                                    <option value="manager1">Manager 1</option>
-                                    <option value="manager2">Manager 2</option>
-                                    <option value="manager3">Manager 3</option>
-                                  </select>
-                                </div>
-                              </div>
-                            </div> */}
                             <input
                               type="hidden"
                               name="check_compliance_score"
@@ -324,23 +595,6 @@ const CertDB_ProductInfo = () => {
                           </div>
 
                           <div className="card-footer text-right">
-                            {/* <button
-                              type="submit"
-                              name="generalButtonEOL"
-                              id="generalButtonEOL"
-                              className="btn btn-danger"
-                            >
-                              Set all Certs for this Product immediately EOL
-                            </button> */}
-                            {/* <button
-                              type="submit"
-                              className="btn btn-secondary"
-                              id="generalButtonDele"
-                              name="general"
-                              value="prodGeneralDele"
-                            >
-                              <i className="fa fa-fw fa-archive"></i> Archive
-                            </button> */}
                             <button
                               type="submit"
                               className="btn btn-primary"
@@ -356,7 +610,7 @@ const CertDB_ProductInfo = () => {
                     </div>
 
                     <div className="col-lg-12 col-xl-6">
-                      <form method="post" action="">
+                      <form onSubmit={handleSaveTechnologies}>
                         <div
                           className="card mb-3"
                           style={{ border: "1px solid #dbdbd9" }}
@@ -366,418 +620,70 @@ const CertDB_ProductInfo = () => {
                             Product Technologies
                           </div>
                           <div className="card-body">
+                            {submitStatus.message && (
+                              <div
+                                className={`alert alert-${
+                                  submitStatus.success ? "success" : "danger"
+                                }`}
+                              >
+                                {submitStatus.message}
+                              </div>
+                            )}
                             <div className="card">
                               <div className="card-header">Technologies</div>
                               <div className="card-body">
-                                <div className="form-group row mb-1">
-                                  <div className="col-xl-12 col-lg-12">
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="1"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="1"
-                                      />{" "}
-                                      <label for="1" className="mr-1">
-                                        125 kHz: Immobiliser
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="2"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="2"
-                                      />{" "}
-                                      <label for="2" className="mr-1">
-                                        13,56 MHz: NFC
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="3"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="3"
-                                      />{" "}
-                                      <label for="3" className="mr-1">
-                                        315 MHz: SRD
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="4"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="4"
-                                      />{" "}
-                                      <label for="4" className="mr-1">
-                                        433 MHz: SRD
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="5"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="5"
-                                      />{" "}
-                                      <label for="5" className="mr-1">
-                                        868 MHz: SRD
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="15"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="15"
-                                      />{" "}
-                                      <label for="15" className="mr-1">
-                                        868 MHz: RFID
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="12"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="12"
-                                      />{" "}
-                                      <label for="12" className="mr-1">
-                                        920 MHz: RFID
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="16"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="16"
-                                      />{" "}
-                                      <label for="16" className="mr-1">
-                                        920 MHz: SRD
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="7"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="7"
-                                      />{" "}
-                                      <label for="7" className="mr-1">
-                                        2,4 GHz: BT
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="13"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="13"
-                                      />{" "}
-                                      <label for="13" className="mr-1">
-                                        2,4 GHz: WLAN
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="33"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="33"
-                                      />{" "}
-                                      <label for="33" className="mr-1">
-                                        2,4 Ghz: ISM PP
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="8"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="8"
-                                      />{" "}
-                                      <label for="8" className="mr-1">
-                                        5 GHz: WLAN Master
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="14"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="14"
-                                      />{" "}
-                                      <label for="14" className="mr-1">
-                                        5 GHz: WLAN Client
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="17"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="17"
-                                      />{" "}
-                                      <label for="17" className="mr-1">
-                                        Receiver: Rx only
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="9"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="9"
-                                      />{" "}
-                                      <label for="9" className="mr-1">
-                                        24 GHz: Radar
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="18"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="18"
-                                      />{" "}
-                                      <label for="18" className="mr-1">
-                                        24 GHz UWB: Radar
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="19"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="19"
-                                      />{" "}
-                                      <label for="19" className="mr-1">
-                                        60 GHz: Radar
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="10"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="10"
-                                      />{" "}
-                                      <label for="10" className="mr-1">
-                                        76-77 GHz: Radar
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="23"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="23"
-                                      />{" "}
-                                      <label for="23" className="mr-1">
-                                        77-81 GHz: Radar
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="11"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="11"
-                                      />{" "}
-                                      <label for="11" className="mr-1">
-                                        120 GHz: Radar
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="20"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="20"
-                                      />{" "}
-                                      <label for="20" className="mr-1">
-                                        600-900 MHz: 5G Low-Band{" "}
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="26"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="26"
-                                      />{" "}
-                                      <label for="26" className="mr-1">
-                                        1-6 GHz: 5G Mid-Band
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="27"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="27"
-                                      />{" "}
-                                      <label for="27" className="mr-1">
-                                        24-40 GHz: 5G High-Band{" "}
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="28"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="28"
-                                      />{" "}
-                                      <label for="28" className="mr-1">
-                                        450-900 MHz: 4G LTE Low-Band{" "}
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="29"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="29"
-                                      />{" "}
-                                      <label for="29" className="mr-1">
-                                        1-3 GHz: 4G LTE Mid-Band
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="30"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="30"
-                                      />{" "}
-                                      <label for="30" className="mr-1">
-                                        3-4 GHz: 4G LTE High-Band{" "}
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="21"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="21"
-                                      />{" "}
-                                      <label for="21" className="mr-1">
-                                        800-960 MHz: 3G UMTS
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="31"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="31"
-                                      />{" "}
-                                      <label for="31" className="mr-1">
-                                        1,5-2,2 GHz: 3G UMTS
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="22"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="22"
-                                      />{" "}
-                                      <label for="22" className="mr-1">
-                                        6-9 GHz: UWB
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="24"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="24"
-                                      />{" "}
-                                      <label for="24" className="mr-1">
-                                        125 kHz: WPT
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="25"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="25"
-                                      />{" "}
-                                      <label for="25" className="mr-1">
-                                        360 kHz: WPT
-                                      </label>
-                                    </div>
-                                    <div className="mr-3 float-left bg-gray-100 pl-1 pr-1 mb-1">
-                                      {" "}
-                                      <input
-                                        id="32"
-                                        type="checkbox"
-                                        name="frequencies[]"
-                                        value="32"
-                                      />{" "}
-                                      <label for="32" className="mr-1">
-                                        1-2 GHz: GNSS (Rx only)
-                                      </label>
+                                {loadingTech ? (
+                                  <div className="text-center">
+                                    Loading technologies...
+                                  </div>
+                                ) : (
+                                  <div className="form-group row mb-1">
+                                    <div className="col-xl-12 col-lg-12">
+                                      <div className="d-flex flex-wrap gap-2">
+                                        {technologies.map((tech) => (
+                                          <div
+                                            key={tech.n_technology_id}
+                                            className="d-flex align-items-center bg-light p-2 rounded"
+                                            style={{ minWidth: "200px" }}
+                                          >
+                                            <input
+                                              id={tech.n_technology_id}
+                                              type="checkbox"
+                                              name="frequencies[]"
+                                              value={tech.n_technology_id}
+                                              onChange={handleTechnologyChange}
+                                              checked={selectedTechnologies.includes(
+                                                tech.n_technology_id.toString()
+                                              )}
+                                              className="me-2"
+                                              style={{ marginTop: "0" }}
+                                            />
+                                            <label
+                                              htmlFor={tech.n_technology_id}
+                                              className="mb-0"
+                                              style={{ whiteSpace: "nowrap" }}
+                                            >
+                                              {tech.c_technology}
+                                            </label>
+                                          </div>
+                                        ))}
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
+                                )}
                               </div>
                             </div>
                           </div>
                           <div className="card-footer text-right">
-                            <button
-                              type="submit"
-                              name="save_technologies"
-                              className="btn btn-primary"
-                            >
-                              <i className="fa fa-fw fa-save"></i> Save
+                            <button type="submit" className="btn btn-primary">
+                              <i className="fa fa-fw fa-save"></i> Save
                             </button>
                           </div>
                         </div>
                       </form>
 
                       <form method="post" action="">
-                        <div
-                          className="card mb-3"
-                          style={{ border: "1px solid #dbdbd9" }}
-                        >
-                          {/* <div
+                        {/* <div
  className="card-header"
  data-tour="true"
  data-step="3"
@@ -799,7 +705,7 @@ const CertDB_ProductInfo = () => {
  </a>
  </div>
  </div> */}
-                          {/* <div
+                        {/* <div
  className="pidOemWidget"
  id="PID_OEM_TARGET_DIV"
  ></div>
@@ -828,7 +734,7 @@ const CertDB_ProductInfo = () => {
  </div>
  </div> */}
 
-                          {/* <div className="card-footer pidSysWidget">
+                        {/* <div className="card-footer pidSysWidget">
  <div id="pidReviewStatus">
  <div className="text-muted pb-3">
  <i className="fa fa-fw fa-info-square pr-4"></i>
@@ -837,7 +743,6 @@ const CertDB_ProductInfo = () => {
  </div>{" "}
  </div>
  </div> */}
-                        </div>
                       </form>
                     </div>
                   </div>
@@ -854,19 +759,24 @@ const CertDB_ProductInfo = () => {
                   className="card card_product_detail_certificates"
                   style={{ border: "1px solid #dbdbd9" }}
                 >
-                  <div
-                    className="card-header"
-                    data-tour="true"
-                    data-step="1"
-                    data-intro="Here you can see a list of all certificates in this product. The number in brackets shows how many certificates there are."
-                  >
-                    <i className="fa fa-lg fa-fw fa-file-certificate"></i>{" "}
-                    Certificates
+                  <div className="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                      <i className="fa fa-lg fa-fw fa-file-certificate"></i>{" "}
+                      Certificates
+                    </div>
+                    <Button
+                      variant="primary"
+                      onClick={() => setShowCertificateModal(true)}
+                    >
+                      Assign Certificate
+                    </Button>
                   </div>
                   <div className="card-body">
                     <div className="table-responsive">
-                      {loading_cer ? (
-                        <div className="text-center">Loading...</div>
+                      {loadingCert ? (
+                        <div className="text-center">
+                          Loading certificates...
+                        </div>
                       ) : (
                         <table className="table table-hover table-striped">
                           <thead className="thead-light">
@@ -896,97 +806,97 @@ const CertDB_ProductInfo = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {certificates.map((cert) => (
-                              <tr
-                              // key={client.clientId}
-                              // onClick={() => handleRowClick(client)}
-                              // style={{ cursor: "pointer" }}
-                              >
-                                <td>
-                                  <a
-                                    className="btn btn-sm btn-outline-gray-500"
-                                    href="#"
-                                    title="Cert Files"
-                                  >
-                                    <i className="fas fa-search"></i>
-                                  </a>
-                                  <a
-                                    className="btn btn-sm btn-outline-gray-500"
-                                    href="#"
-                                    title="Info"
-                                  >
-                                    <i className="fas fa-info"></i>
-                                  </a>
-                                </td>
-                                <td>{cert.c_comments}</td>
-                                <td className="text-center">2025-01-24</td>
-                                <td className="text-center">
-                                  <span
-                                    style={{
-                                      lineHeight: "20px",
-                                      fontSize: "20px",
-                                    }}
-                                  >
-                                    ∞
-                                  </span>
-                                </td>
-                                <td className="text-center">
-                                  <span
-                                    className="fa fa-lg fa-fw fa-star"
-                                    style={{ color: "#66cc99" }}
-                                  ></span>
-                                </td>
-                                <td className="text-left"></td>
-                                <td className="text-center">
-                                  <a
-                                    className="ibl-lightbox"
-                                    href="#"
-                                    style={{ cursor: "pointer" }}
-                                  >
-                                    <span
-                                      className="fa fa-lg fa-fw far fa-file-alt"
-                                      style={{ color: "#666666" }}
-                                    ></span>
-                                  </a>
-                                </td>
-                                <td className="text-center">
-                                  <span
-                                    className="fa fa-lg fa-fw fa-comment"
-                                    style={{ color: "#666666" }}
-                                  ></span>
-                                  <span
-                                    className="fa fa-lg fa-fw fa-comments"
-                                    style={{ color: "#666666" }}
-                                  ></span>
-                                </td>
-
-                                <td className="text-right buttons">
-                                  <a
-                                    className="btn btn-sm btn-outline-gray-500 mr-1"
-                                    title="Edit Testreport"
-                                  >
-                                    <i className="fa fa-fw fa-edit"></i>
-                                  </a>
-                                  <a
-                                    className="btn btn-sm btn-outline-gray-500 mr-1"
-                                    title="Archive Testreport"
-                                  >
-                                    <i className="fa fa-fw fa-archive"></i>
-                                  </a>
-                                  {roles.includes("admin") && (
-                                    <Button
-                                      variant="link"
-                                      className="text-danger p-0"
-                                      // onClick={(e) =>
-                                      // handleDeleteClick(client, e)
-                                      // }
+                            {certificates.map((cert) => {
+                              const progress = getProgressPercentage(
+                                cert.c_status
+                              );
+                              const progressColor = getProgressColor(
+                                cert.c_status
+                              );
+                              return (
+                                <tr key={cert.n_certificate_id}>
+                                  <td>
+                                    <a
+                                      className="btn btn-sm btn-outline-gray-500"
+                                      href="#"
+                                      title="Cert Files"
                                     >
-                                      <FaTrash />
-                                    </Button>
-                                  )}
-                                </td>
-                              </tr>
-                            ))}
+                                      <i className="fas fa-search"></i>
+                                    </a>
+                                    <a
+                                      className="btn btn-sm btn-outline-gray-500"
+                                      href="#"
+                                      title="Info"
+                                    >
+                                      <i className="fas fa-info"></i>
+                                    </a>
+                                  </td>
+                                  <td>
+                                    {countryNames[cert.n_country_id] ||
+                                      "Loading..."}
+                                  </td>
+                                  <td className="text-center">
+                                    {cert.c_cert_date}
+                                  </td>
+                                  <td className="text-center">
+                                    {cert.c_exp_date}
+                                  </td>
+                                  <td className="text-center">
+                                    <span
+                                      className={`fa fa-lg fa-fw fa-star ${getStatusColor(
+                                        cert.c_status
+                                      )}`}
+                                    ></span>
+                                  </td>
+                                  <td className="text-center">
+                                    <div
+                                      className="progress"
+                                      style={{
+                                        height: "20px",
+                                        width: "100px",
+                                        margin: "0 auto",
+                                      }}
+                                    >
+                                      <div
+                                        className={`progress-bar ${progressColor}`}
+                                        role="progressbar"
+                                        style={{ width: `${progress}%` }}
+                                        aria-valuenow={progress}
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                      >
+                                        {progress}%
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="text-center">
+                                    <a
+                                      className="ibl-lightbox"
+                                      href="#"
+                                      style={{ cursor: "pointer" }}
+                                    >
+                                      <span
+                                        className="fa fa-lg fa-fw far fa-file-alt"
+                                        style={{ color: "#666666" }}
+                                      ></span>
+                                    </a>
+                                  </td>
+                                  <td className="text-center">
+                                    <span
+                                      className="fa fa-lg fa-fw fa-comment"
+                                      style={{
+                                        color: "#666666",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() =>
+                                        handleShowComments(cert.c_comments)
+                                      }
+                                      title="View Comments"
+                                    ></span>
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       )}
@@ -1021,6 +931,7 @@ const CertDB_ProductInfo = () => {
                           variant="contained"
                           color="primary"
                           startIcon={<span>+</span>}
+                          onClick={() => setShowTestReportModal(true)}
                         >
                           Add Test Report
                         </Button>
@@ -1046,15 +957,10 @@ const CertDB_ProductInfo = () => {
                           </thead>
                           <tbody>
                             {testReports.map((report) => (
-                              <tr
-                              // key={client.clientId}
-                              // onClick={() => handleRowClick(client)}
-                              // style={{ cursor: "pointer" }}
-                              >
+                              <tr key={report.n_report_id}>
                                 <td>
                                   <input type="checkbox" />
                                 </td>
-
                                 <td>
                                   <a
                                     href=""
@@ -1066,17 +972,11 @@ const CertDB_ProductInfo = () => {
                                   </a>
                                 </td>
                                 <td>{report.c_file_cat_name}</td>
-
+                                <td>{report.c_file_type}</td>
+                                <td>{report.d_date}</td>
+                                <td>{report.c_uploaded_by}</td>
                                 <td>
-                                  <div>application/pdf</div>
-                                  <div className="small text-muted">
-                                    0.03 MB
-                                  </div>
-                                </td>
-                                <td>2025-03-25 01:50:09</td>
-                                <td>richa@c-prav.com</td>
-                                <td>
-                                  <input type="checkbox" />
+                                  <FaTrash className="text-danger" />
                                 </td>
                                 <td className="text-right buttons">
                                   <a
@@ -1091,17 +991,6 @@ const CertDB_ProductInfo = () => {
                                   >
                                     <i className="fa fa-fw fa-archive"></i>
                                   </a>
-                                  {roles.includes("admin") && (
-                                    <Button
-                                      variant="link"
-                                      className="text-danger p-0"
-                                      // onClick={(e) =>
-                                      // handleDeleteClick(client, e)
-                                      // }
-                                    >
-                                      <FaTrash />
-                                    </Button>
-                                  )}
                                 </td>
                               </tr>
                             ))}
@@ -1116,6 +1005,200 @@ const CertDB_ProductInfo = () => {
           </div>
         </div>
       </div>
+
+      {/* Comments Modal */}
+      <Modal show={showComments} onHide={handleCloseComments} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Certificate Comments</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>{selectedComments}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseComments}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Certificate Assignment Modal */}
+      <Modal
+        show={showCertificateModal}
+        onHide={() => setShowCertificateModal(false)}
+        size="lg"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Assign New Certificate</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSaveCertificate}>
+            <Form.Group className="mb-3">
+              <Form.Label>Country</Form.Label>
+              <Form.Select
+                name="n_country_id"
+                value={certificateForm.n_country_id}
+                onChange={handleCertificateInputChange}
+                required
+              >
+                <option value="">Select Country</option>
+                {countries.map((country) => (
+                  <option key={country.countryId} value={country.countryId}>
+                    {country.country}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Certificate Date</Form.Label>
+              <DatePicker
+                selected={certificateForm.c_cert_date}
+                onChange={(date) => handleDateChange(date, "c_cert_date")}
+                className="form-control"
+                dateFormat="yyyy-MM-dd"
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Expiration Date</Form.Label>
+              <DatePicker
+                selected={certificateForm.c_exp_date}
+                onChange={(date) => handleDateChange(date, "c_exp_date")}
+                className="form-control"
+                dateFormat="yyyy-MM-dd"
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Status</Form.Label>
+              <Form.Select
+                name="c_status"
+                value={certificateForm.c_status}
+                onChange={handleCertificateInputChange}
+                required
+              >
+                <option value="Approved">Approved</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Ends Soon">Ends Soon</option>
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Certificate File (PDF)</Form.Label>
+              <Form.Control
+                type="file"
+                accept=".pdf"
+                onChange={handleFileChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Comments</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                name="c_comments"
+                value={certificateForm.c_comments}
+                onChange={handleCertificateInputChange}
+                required
+              />
+            </Form.Group>
+
+            <div className="text-end">
+              <Button
+                variant="secondary"
+                onClick={() => setShowCertificateModal(false)}
+                className="me-2"
+              >
+                Cancel
+              </Button>
+              <Button variant="primary" type="submit">
+                Save
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
+
+      {/* Test Report Modal */}
+      <Modal
+        show={showTestReportModal}
+        onHide={() => setShowTestReportModal(false)}
+        size="lg"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Add Test Report</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSaveTestReport}>
+            <Form.Group className="mb-3">
+              <Form.Label>Uploaded By</Form.Label>
+              <Form.Control
+                type="text"
+                value={testReportForm.c_uploaded_by}
+                readOnly
+                disabled
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>File Category</Form.Label>
+              <Form.Select
+                name="c_file_cat_name"
+                value={testReportForm.c_file_cat_name}
+                onChange={handleTestReportInputChange}
+                required
+              >
+                <option value="Test Report EMC">Test Report EMC</option>
+                <option value="Test Report RF">Test Report RF</option>
+                <option value="Test Report Safety">Test Report Safety</option>
+                <option value="Test Report Health">Test Report Health</option>
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>File Type</Form.Label>
+              <Form.Control type="text" value="PDF" readOnly disabled />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Date</Form.Label>
+              <Form.Control
+                type="text"
+                value={testReportForm.d_date}
+                readOnly
+                disabled
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Test Report File (PDF)</Form.Label>
+              <Form.Control
+                type="file"
+                accept=".pdf"
+                onChange={handleTestReportFileChange}
+                required
+              />
+            </Form.Group>
+
+            <div className="text-end">
+              <Button
+                variant="secondary"
+                onClick={() => setShowTestReportModal(false)}
+                className="me-2"
+              >
+                Cancel
+              </Button>
+              <Button variant="primary" type="submit">
+                Save
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
