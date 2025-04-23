@@ -59,6 +59,8 @@ const CertDB_ProductInfo = () => {
   });
 
   const [showTestReportModal, setShowTestReportModal] = useState(false);
+  const [reportCategories, setReportCategories] = useState([]);
+  const [loadingReportCategories, setLoadingReportCategories] = useState(true);
   const [testReportForm, setTestReportForm] = useState({
     n_product_id: formData.productId,
     c_uploaded_by: "",
@@ -74,6 +76,7 @@ const CertDB_ProductInfo = () => {
     fetchReports();
     fetchCertificates();
     fetchTechnologies();
+    fetchReportCategories();
     if (formData.productId) {
       fetchProductTechnologies();
       fetchCountries();
@@ -81,7 +84,7 @@ const CertDB_ProductInfo = () => {
     if (authState?.idToken?.claims?.sub) {
       setTestReportForm((prev) => ({
         ...prev,
-        c_uploaded_by: authState.idToken.claims.sub,
+        c_uploaded_by: authState.idToken.claims.email,
       }));
     }
   }, [formData.productId, authState?.idToken?.claims?.sub]);
@@ -162,6 +165,17 @@ const CertDB_ProductInfo = () => {
     } catch (error) {
       console.error("Error fetching countries:", error);
       setLoadingCountries(false);
+    }
+  };
+
+  const fetchReportCategories = async () => {
+    try {
+      const response = await axiosInstance.get("/report-category");
+      setReportCategories(response.data);
+      setLoadingReportCategories(false);
+    } catch (error) {
+      console.error("Error fetching report categories:", error);
+      setLoadingReportCategories(false);
     }
   };
 
@@ -915,28 +929,20 @@ const CertDB_ProductInfo = () => {
                   className="card card_product_detail_certificates"
                   style={{ border: "1px solid #dbdbd9" }}
                 >
-                  <div
-                    className="card-header"
-                    data-tour="true"
-                    data-step="1"
-                    data-intro="Here you can see a list of all certificates in this product. The number in brackets shows how many certificates there are."
-                  >
-                    <i className="fa fa-lg fa-fw fa-file-certificate"></i> Test
-                    Reports
+                  <div className="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                      <i className="fa fa-lg fa-fw fa-file-certificate"></i>{" "}
+                      Test Reports
+                    </div>
+                    <Button
+                      variant="primary"
+                      onClick={() => setShowTestReportModal(true)}
+                    >
+                      Add Test Report
+                    </Button>
                   </div>
                   <div className="card-body">
                     <div className="table-responsive">
-                      <div style={{ textAlign: "right" }}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          startIcon={<span>+</span>}
-                          onClick={() => setShowTestReportModal(true)}
-                        >
-                          Add Test Report
-                        </Button>
-                      </div>
-
                       {loading ? (
                         <div className="text-center">Loading...</div>
                       ) : (
@@ -946,11 +952,11 @@ const CertDB_ProductInfo = () => {
                               <th width="5%">
                                 <input type="checkbox" />
                               </th>
-                              <th width="35%">Exhibit Name</th>
+                              <th width="25%">Exhibit Name</th>
                               <th width="15%">File Category</th>
                               <th width="10%">Filetype</th>
                               <th width="10%">Date</th>
-                              <th width="10%">Uploaded by</th>
+                              <th width="20%">Uploaded by</th>
                               <th width="10%">Allow Deletion</th>
                               <th width="10%" className="text-right"></th>
                             </tr>
@@ -973,7 +979,7 @@ const CertDB_ProductInfo = () => {
                                 </td>
                                 <td>{report.c_file_cat_name}</td>
                                 <td>{report.c_file_type}</td>
-                                <td>{report.d_date}</td>
+                                <td>{report.d_date.split("00")[0]}</td>
                                 <td>{report.c_uploaded_by}</td>
                                 <td>
                                   <FaTrash className="text-danger" />
@@ -1152,10 +1158,19 @@ const CertDB_ProductInfo = () => {
                 onChange={handleTestReportInputChange}
                 required
               >
-                <option value="Test Report EMC">Test Report EMC</option>
-                <option value="Test Report RF">Test Report RF</option>
-                <option value="Test Report Safety">Test Report Safety</option>
-                <option value="Test Report Health">Test Report Health</option>
+                <option value="">Select Category</option>
+                {loadingReportCategories ? (
+                  <option>Loading categories...</option>
+                ) : (
+                  reportCategories.map((category) => (
+                    <option
+                      key={category.c_category_name}
+                      value={category.c_category_name}
+                    >
+                      {category.c_category_name}
+                    </option>
+                  ))
+                )}
               </Form.Select>
             </Form.Group>
 

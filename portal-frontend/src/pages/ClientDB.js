@@ -12,6 +12,7 @@ const ClientDB = () => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCountryModal, setShowCountryModal] = useState(false);
+  const [showReportCategoryModal, setShowReportCategoryModal] = useState(false);
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState(null);
@@ -25,9 +26,10 @@ const ClientDB = () => {
     roles: "staff",
   });
   const [countryFormData, setCountryFormData] = useState({
-    countryName: "",
-    countryCode: "",
-    status: "active",
+    country: "",
+  });
+  const [reportCategoryFormData, setReportCategoryFormData] = useState({
+    c_category_name: "",
   });
   const [formErrors, setFormErrors] = useState({});
 
@@ -66,9 +68,7 @@ const ClientDB = () => {
   const handleCountryClose = () => {
     setShowCountryModal(false);
     setCountryFormData({
-      countryName: "",
-      countryCode: "",
-      status: "active",
+      country: "",
     });
   };
 
@@ -91,6 +91,35 @@ const ClientDB = () => {
       fetchClients();
     } catch (error) {
       console.error("Error saving country:", error);
+    }
+  };
+
+  const handleReportCategoryClose = () => {
+    setShowReportCategoryModal(false);
+    setReportCategoryFormData({
+      c_category_name: "",
+    });
+  };
+
+  const handleReportCategoryShow = () => setShowReportCategoryModal(true);
+
+  const handleReportCategoryInputChange = (e) => {
+    const { name, value } = e.target;
+    setReportCategoryFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleReportCategorySubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axiosInstance.post("/report-category", reportCategoryFormData);
+      handleReportCategoryClose();
+      // Refresh the list if needed
+      fetchClients();
+    } catch (error) {
+      console.error("Error saving report category:", error);
     }
   };
 
@@ -221,6 +250,14 @@ const ClientDB = () => {
                   startIcon={<span>+</span>}
                 >
                   Add Country
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleReportCategoryShow}
+                  startIcon={<span>+</span>}
+                >
+                  Add Report Category
                 </Button>
                 <Button
                   variant="contained"
@@ -392,43 +429,12 @@ const ClientDB = () => {
                         </Form.Label>
                         <Form.Control
                           type="text"
-                          name="countryName"
-                          value={countryFormData.countryName}
+                          name="country"
+                          value={countryFormData.country}
                           onChange={handleCountryInputChange}
                           required
                           size="sm"
                         />
-                      </Form.Group>
-                    </div>
-                    <div className="col-12">
-                      <Form.Group>
-                        <Form.Label className="small mb-1">
-                          Country Code
-                        </Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="countryCode"
-                          value={countryFormData.countryCode}
-                          onChange={handleCountryInputChange}
-                          required
-                          size="sm"
-                          maxLength={2}
-                          placeholder="e.g., US, GB, DE"
-                        />
-                      </Form.Group>
-                    </div>
-                    <div className="col-12">
-                      <Form.Group>
-                        <Form.Label className="small mb-1">Status</Form.Label>
-                        <Form.Select
-                          name="status"
-                          value={countryFormData.status}
-                          onChange={handleCountryInputChange}
-                          size="sm"
-                        >
-                          <option value="active">Active</option>
-                          <option value="inactive">Inactive</option>
-                        </Form.Select>
                       </Form.Group>
                     </div>
                   </div>
@@ -436,6 +442,52 @@ const ClientDB = () => {
                     <Button
                       variant="secondary"
                       onClick={handleCountryClose}
+                      size="small"
+                    >
+                      Cancel
+                    </Button>
+                    <Button variant="primary" type="submit" size="small">
+                      Save
+                    </Button>
+                  </div>
+                </Form>
+              </Modal.Body>
+            </Modal>
+
+            {/* Add Report Category Modal */}
+            <Modal
+              show={showReportCategoryModal}
+              onHide={handleReportCategoryClose}
+              size="sm"
+            >
+              <Modal.Header closeButton className="py-2">
+                <Modal.Title className="fs-5">
+                  Add New Report Category
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body className="py-2">
+                <Form onSubmit={handleReportCategorySubmit}>
+                  <div className="row g-2">
+                    <div className="col-12">
+                      <Form.Group>
+                        <Form.Label className="small mb-1">
+                          Report Category Name
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="c_category_name"
+                          value={reportCategoryFormData.c_category_name}
+                          onChange={handleReportCategoryInputChange}
+                          required
+                          size="sm"
+                        />
+                      </Form.Group>
+                    </div>
+                  </div>
+                  <div className="d-flex justify-content-end gap-2 mt-3">
+                    <Button
+                      variant="secondary"
+                      onClick={handleReportCategoryClose}
                       size="small"
                     >
                       Cancel
