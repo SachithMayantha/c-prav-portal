@@ -48,4 +48,9 @@ public class ProductController {
     public ResponseEntity<List<ProductDto>> getProductsByClientId(@PathVariable("clientId") Integer clientId) {
        return new ResponseEntity<>(productService.getAllProductsByClientId(clientId), HttpStatus.OK);
     }
+
+    @GetMapping("getProductsByEmail/{email}")
+    public ResponseEntity<List<ProductDto>> getProductsByEmail(@PathVariable("email") String email) {
+        return new ResponseEntity<>(productService.getProductsByEmail(email), HttpStatus.OK);
+    }
 }

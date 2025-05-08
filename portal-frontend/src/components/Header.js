@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useOktaAuth } from "@okta/okta-react";
 
 const Header = () => {
   const { oktaAuth, authState } = useOktaAuth();
+
+  useEffect(() => {
+    if (authState?.isAuthenticated && authState?.idToken?.claims) {
+      console.log("Token claims:", authState.idToken.claims);
+      console.log("ID Token:", authState.idToken.idToken);
+      console.log("Access Token:", authState.accessToken?.accessToken);
+    }
+  }, [authState]);
 
   const handleSignOut = async () => {
     await oktaAuth.signOut();
@@ -10,27 +18,19 @@ const Header = () => {
   };
 
   const getUserWelcomeText = () => {
-    if (!authState?.idToken?.claims) {
-      console.log("No token claims available");
+    if (!authState?.isAuthenticated || !authState?.idToken?.claims) {
       return "Welcome to C-Prav";
     }
 
-    console.log("Token claims:", authState.idToken.claims);
-
     const roles = authState.idToken.claims.roles || [];
     const fullName = authState.idToken.claims.name || "";
-    const firstName = fullName.split(" ")[0].toUpperCase(); // Convert first name to uppercase
+    const firstName = fullName.split(" ")[0].toUpperCase();
 
     // Check if user has only "client" role and not "admin" or "staff"
     const isClientOnly =
       roles.includes("client") &&
       !roles.includes("admin") &&
       !roles.includes("staff");
-
-    console.log("Roles:", roles);
-    console.log("Full Name:", fullName);
-    console.log("First Name:", firstName);
-    console.log("Is Client Only:", isClientOnly);
 
     return isClientOnly
       ? `Welcome to C-Prav > ${firstName}`

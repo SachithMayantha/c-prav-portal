@@ -9,6 +9,7 @@ import com.c_prav.portal.repository.ProductRepository;
 import com.c_prav.portal.service.ProductService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -75,5 +76,10 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDto> getAllProductsByClientId(Integer clientId) {
         List<ProductEntity> entities = productRepository.findProductsByClientId(clientId);
         return entities.stream().map(ProductMapper::mapToProductDto).collect(Collectors.toList());
+    }
+
+    public List<ProductDto> getProductsByEmail(String email) {
+        List<ProductEntity> entities = productRepository.findProductsByClientEmail(email);
+    return entities.stream().map(ProductMapper::mapToProductDto).collect(Collectors.toList());
     }
 }

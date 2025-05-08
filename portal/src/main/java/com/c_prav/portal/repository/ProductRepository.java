@@ -12,4 +12,10 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<ProductEntity, Integer> {
     @Query("SELECT p FROM ProductEntity p JOIN ClientProductEntity pc ON p.n_product_id = pc.n_product_id WHERE pc.n_client_id = :clientId")
     List<ProductEntity> findProductsByClientId(@Param("clientId") Integer clientId);
+
+    @Query(value = "SELECT p.* FROM `c-prav`.product p " +
+            "JOIN `c-prav`.product_client pc ON p.n_product_id = pc.n_product_id " +
+            "JOIN `c-prav`.clients c ON pc.n_client_id = c.n_client_id " +
+            "WHERE c.c_email = :email", nativeQuery = true)
+    List<ProductEntity> findProductsByClientEmail(@Param("email") String email);
 }
