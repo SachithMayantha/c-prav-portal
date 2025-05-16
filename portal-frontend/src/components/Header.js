@@ -54,7 +54,7 @@ const Header = () => {
       >
         <a className="navbar-brand brand-logo" href="/index.html">
           <img
-            src="/images/cprav_logo.webp"
+            src="/images/logo2.png"
             alt="logo"
             className="logo-dark"
             style={{ height: "65px", width: "80px" }}
@@ -86,17 +86,17 @@ const Header = () => {
         </h5>
         <ul className="navbar-nav navbar-nav-right">
           <form className="search-form d-none d-md-block" action="#">
-            <i className="icon-magnifier"></i>
-            <input
+            {/* <i className="icon-magnifier"></i> */}
+            {/* <input
               type="search"
               className="form-control"
               placeholder="Search Here"
               title="Search here"
-            />
+            /> */}
           </form>
 
           <li className="nav-item dropdown">
-            <a
+            {/* <a
               className="nav-link count-indicator message-dropdown"
               id="messageDropdown"
               href="#"
@@ -105,7 +105,7 @@ const Header = () => {
             >
               <i className="icon-speech"></i>
               <span className="count">7</span>
-            </a>
+            </a> */}
             <div
               className="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0"
               aria-labelledby="messageDropdown"
@@ -174,11 +174,11 @@ const Header = () => {
                   {authState?.idToken?.claims?.email || "user@example.com"}
                 </p>
               </div>
-              <a className="dropdown-item">
+              {/* <a className="dropdown-item">
                 <i className="dropdown-item-icon icon-user text-primary"></i> My
                 Profile
                 <span className="badge badge-pill badge-danger">1</span>
-              </a>
+              </a> */}
               <a className="dropdown-item" onClick={handleSignOut}>
                 <i className="dropdown-item-icon icon-power text-primary"></i>{" "}
                 Sign Out

@@ -15,7 +15,7 @@ const Profile = () => {
                     </div>
                     <div className="text-wrapper">
                         <p className="profile-name">{authState?.idToken?.claims?.name || "User"}</p>
-                        <p className="designation">Administrator</p>
+                        <p className="designation">{authState?.idToken?.claims?.roles[1].toUpperCase() || "User"}</p>
                     </div>
                     {/* <div className="icon-container">
                                 <i className="icon-bubbles"></i>

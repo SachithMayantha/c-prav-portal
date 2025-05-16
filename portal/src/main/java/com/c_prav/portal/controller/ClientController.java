@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/client")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:3000")
 public class ClientController {
     private ClientService clientService;
     private OktaService oktaService;

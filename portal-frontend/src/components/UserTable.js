@@ -245,9 +245,6 @@ const UserTable = () => {
           <TableHead>
             <TableRow>
               <TableCell>
-                <strong>ID</strong>
-              </TableCell>
-              <TableCell>
                 <strong>Name</strong>
               </TableCell>
               <TableCell>
@@ -264,11 +261,10 @@ const UserTable = () => {
           <TableBody>
             {users.map((user) => (
               <TableRow
-                key={user.userId} // user.userId from your backend DTO
+                key={user.userId}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
-                <TableCell>{user.userId}</TableCell>
-                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.firstName + " " + user.lastName}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.roles || "N/A"}</TableCell>
                 <TableCell>
